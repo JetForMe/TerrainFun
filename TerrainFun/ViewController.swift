@@ -7,13 +7,19 @@
 //
 
 import Cocoa
+import SceneKit
 
-class ViewController: NSViewController {
-
-	override func viewDidLoad() {
+class
+ViewController: NSViewController
+{
+	override
+	func
+	viewDidLoad()
+	{
 		super.viewDidLoad()
-
-		// Do any additional setup after loading the view.
+		
+		let scene = TerrainEditorScene()
+		self.sceneView.scene = scene
 	}
 
 	override var representedObject: Any? {
@@ -22,6 +28,7 @@ class ViewController: NSViewController {
 		}
 	}
 
-
+	
+	@IBOutlet weak var sceneView: SCNView!
 }
 

@@ -14,6 +14,11 @@
 		C6AE5D7324C94F6A000EDC78 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C6AE5D7124C94F6A000EDC78 /* Main.storyboard */; };
 		C6AE5D7F24C94F6B000EDC78 /* TerrainFunTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5D7E24C94F6B000EDC78 /* TerrainFunTests.swift */; };
 		C6AE5D8A24C94F6B000EDC78 /* TerrainFunUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5D8924C94F6B000EDC78 /* TerrainFunUITests.swift */; };
+		C6AE5DE924C97A6C000EDC78 /* TerrainEditorScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5DE824C97A6C000EDC78 /* TerrainEditorScene.swift */; };
+		C6AE5DEB24C97AE4000EDC78 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5DEA24C97AE4000EDC78 /* Utils.swift */; };
+		C6AE5DED24C97C51000EDC78 /* SCNViewFR.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5DEC24C97C51000EDC78 /* SCNViewFR.swift */; };
+		C6CAB72E24D152C500136F90 /* BinaryReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6CAB72D24D152C500136F90 /* BinaryReader.swift */; };
+		C6CAB73024D1596800136F90 /* TIFFImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6CAB72F24D1596800136F90 /* TIFFImage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +53,12 @@
 		C6AE5D8524C94F6B000EDC78 /* TerrainFunUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TerrainFunUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6AE5D8924C94F6B000EDC78 /* TerrainFunUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerrainFunUITests.swift; sourceTree = "<group>"; };
 		C6AE5D8B24C94F6B000EDC78 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C6AE5D9724C96969000EDC78 /* Cartfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Cartfile; sourceTree = "<group>"; };
+		C6AE5DE824C97A6C000EDC78 /* TerrainEditorScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerrainEditorScene.swift; sourceTree = "<group>"; };
+		C6AE5DEA24C97AE4000EDC78 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		C6AE5DEC24C97C51000EDC78 /* SCNViewFR.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCNViewFR.swift; sourceTree = "<group>"; };
+		C6CAB72D24D152C500136F90 /* BinaryReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinaryReader.swift; sourceTree = "<group>"; };
+		C6CAB72F24D1596800136F90 /* TIFFImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TIFFImage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +89,7 @@
 		C6AE5D5D24C94F68000EDC78 = {
 			isa = PBXGroup;
 			children = (
+				C6AE5D9724C96969000EDC78 /* Cartfile */,
 				C6AE5D6824C94F68000EDC78 /* TerrainFun */,
 				C6AE5D7D24C94F6B000EDC78 /* TerrainFunTests */,
 				C6AE5D8824C94F6B000EDC78 /* TerrainFunUITests */,
@@ -101,6 +113,11 @@
 				C6AE5D6924C94F68000EDC78 /* AppDelegate.swift */,
 				C6AE5D6B24C94F68000EDC78 /* ViewController.swift */,
 				C6AE5D6D24C94F68000EDC78 /* Document.swift */,
+				C6AE5DE824C97A6C000EDC78 /* TerrainEditorScene.swift */,
+				C6AE5DEA24C97AE4000EDC78 /* Utils.swift */,
+				C6AE5DEC24C97C51000EDC78 /* SCNViewFR.swift */,
+				C6CAB72D24D152C500136F90 /* BinaryReader.swift */,
+				C6CAB72F24D1596800136F90 /* TIFFImage.swift */,
 				C6AE5D6F24C94F6A000EDC78 /* Assets.xcassets */,
 				C6AE5D7124C94F6A000EDC78 /* Main.storyboard */,
 				C6AE5D7424C94F6A000EDC78 /* Info.plist */,
@@ -257,9 +274,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C6CAB72E24D152C500136F90 /* BinaryReader.swift in Sources */,
+				C6AE5DEB24C97AE4000EDC78 /* Utils.swift in Sources */,
 				C6AE5D6C24C94F68000EDC78 /* ViewController.swift in Sources */,
+				C6AE5DE924C97A6C000EDC78 /* TerrainEditorScene.swift in Sources */,
 				C6AE5D6A24C94F68000EDC78 /* AppDelegate.swift in Sources */,
 				C6AE5D6E24C94F68000EDC78 /* Document.swift in Sources */,
+				C6CAB73024D1596800136F90 /* TIFFImage.swift in Sources */,
+				C6AE5DED24C97C51000EDC78 /* SCNViewFR.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
