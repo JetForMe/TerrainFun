@@ -10,7 +10,7 @@ import Cocoa
 
 import SceneKit
 
-
+import TIFFLib
 
 
 class
@@ -129,7 +129,20 @@ Document: NSDocument
 			return
 		}
 		
-		let ti = try! TIFFImage(contentsOfURL: inURL)
+		let data = try! Data(contentsOf: inURL)
+		let tiffImage: TIFFLib.TIFFImage = TIFFReader.readTiff(from: data)
+		let directories: [TIFFFileDirectory] = tiffImage.fileDirectories()
+		let directory: TIFFFileDirectory = directories[0]
+		let des = directory.entries()!
+//		for idx in 0..<des.count
+//		{
+//			let de = des[idx] as! TIFFFileDirectoryEntry
+//			debugLog("de: \(de.fieldType())")
+//		}
+		
+//		let rasters: TIFFRasters = directory.readRasters()			//	Expensive
+			
+		let ti = try! TIFFImageA(contentsOfURL: inURL)
 		
 //		let imgData = CGImageGetdata
 		let xSpan = meshWidth / imgWidth

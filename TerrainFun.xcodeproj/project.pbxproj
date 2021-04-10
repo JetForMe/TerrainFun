@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C63CF80E257F57D500A66A3E /* TIFFLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C63CF80D257F57D500A66A3E /* TIFFLib.framework */; };
+		C63CF80F257F57D500A66A3E /* TIFFLib.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C63CF80D257F57D500A66A3E /* TIFFLib.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C6AE5D6A24C94F68000EDC78 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5D6924C94F68000EDC78 /* AppDelegate.swift */; };
 		C6AE5D6C24C94F68000EDC78 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5D6B24C94F68000EDC78 /* ViewController.swift */; };
 		C6AE5D6E24C94F68000EDC78 /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5D6D24C94F68000EDC78 /* Document.swift */; };
@@ -38,7 +40,24 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		C63CF810257F57D500A66A3E /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				C63CF80F257F57D500A66A3E /* TIFFLib.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		C63CF7AC257F559200A66A3E /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
+		C63CF80D257F57D500A66A3E /* TIFFLib.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TIFFLib.framework; path = "../../../../Library/Developer/Xcode/DerivedData/tiff-ios-gmqwsjppvdzgitfvsvxkvuhqhtrv/Build/Products/Debug/TIFFLib.framework"; sourceTree = "<group>"; };
+		C6521C3724D2D2AE004128B6 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		C6AE5D6624C94F68000EDC78 /* TerrainFun.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TerrainFun.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6AE5D6924C94F68000EDC78 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C6AE5D6B24C94F68000EDC78 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -66,6 +85,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C63CF80E257F57D500A66A3E /* TIFFLib.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -86,14 +106,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C63CF7A3257F54FA00A66A3E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C63CF80D257F57D500A66A3E /* TIFFLib.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		C6AE5D5D24C94F68000EDC78 = {
 			isa = PBXGroup;
 			children = (
 				C6AE5D9724C96969000EDC78 /* Cartfile */,
+				C6521C3724D2D2AE004128B6 /* README.md */,
+				C63CF7AC257F559200A66A3E /* BridgingHeader.h */,
 				C6AE5D6824C94F68000EDC78 /* TerrainFun */,
 				C6AE5D7D24C94F6B000EDC78 /* TerrainFunTests */,
 				C6AE5D8824C94F6B000EDC78 /* TerrainFunUITests */,
 				C6AE5D6724C94F68000EDC78 /* Products */,
+				C63CF7A3257F54FA00A66A3E /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -154,6 +185,7 @@
 				C6AE5D6224C94F68000EDC78 /* Sources */,
 				C6AE5D6324C94F68000EDC78 /* Frameworks */,
 				C6AE5D6424C94F68000EDC78 /* Resources */,
+				C63CF810257F57D500A66A3E /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -450,6 +482,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = H6F2W964VK;
 				ENABLE_HARDENED_RUNTIME = YES;
+				FRAMEWORK_SEARCH_PATHS = "/Users/rmann/Library/Developer/Xcode/DerivedData/tiff-ios-gmqwsjppvdzgitfvsvxkvuhqhtrv/Build/Products/Debug";
 				INFOPLIST_FILE = TerrainFun/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -457,6 +490,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.latencyzero.TerrainFun;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = BridgingHeader.h;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -470,6 +504,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = H6F2W964VK;
 				ENABLE_HARDENED_RUNTIME = YES;
+				FRAMEWORK_SEARCH_PATHS = "/Users/rmann/Library/Developer/Xcode/DerivedData/tiff-ios-gmqwsjppvdzgitfvsvxkvuhqhtrv/Build/Products/Debug";
 				INFOPLIST_FILE = TerrainFun/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -477,6 +512,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.latencyzero.TerrainFun;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = BridgingHeader.h;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
