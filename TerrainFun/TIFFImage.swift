@@ -201,7 +201,7 @@ TIFFImageA
 						else if de.type == .short
 						{
 							let vals: [UInt16] = self.reader.get(count: de.count)
-							ifd.tileByteCounts = vals.map { UInt32($0) }
+							ifd.tileByteCounts = vals.map { UInt64($0) }
 						}
 						else
 						{
@@ -510,9 +510,9 @@ TIFFImageA
 		func
 		uint64()
 			throws
-			-> UInt32
+			-> UInt64
 		{
-			if self.type == .byte || self.type == .short || self.type == .long || self.type.long8
+			if self.type == .byte || self.type == .short || self.type == .long || self.type == .long8
 			{
 				return self.offset
 			}

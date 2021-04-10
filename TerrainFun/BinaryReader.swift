@@ -56,17 +56,14 @@ BinaryReader
 		{
 			let hi: UInt32 = self.get()
 			let lo: UInt32 = self.get()
-			v = UInt64(hi) << 32
-				| UInt64(lo)
+			v = UInt64(hi) << 32 | UInt64(lo)
 		}
 		else
 		{
 			let lo: UInt32 = self.get()
 			let hi: UInt32 = self.get()
-			v = UInt64(hi) << 32
-				| UInt64(lo)
+			v = UInt64(hi) << 32 | UInt64(lo)
 		}
-		self.idx += 8
 		return v
 	}
 	
@@ -129,10 +126,12 @@ BinaryReader
 					| UInt64(self.data[self.idx + 1]) << 48
 					| UInt64(self.data[self.idx + 2]) << 40
 					| UInt64(self.data[self.idx + 3]) << 32
+			
 			iv |= UInt64(self.data[self.idx + 4]) << 24
 					| UInt64(self.data[self.idx + 5]) << 16
 					| UInt64(self.data[self.idx + 6]) << 8
 					| UInt64(self.data[self.idx + 7]) << 0
+			
 			v = Double(bitPattern: iv)
 		}
 		else
@@ -146,6 +145,7 @@ BinaryReader
 					| UInt64(self.data[self.idx + 5]) << 40
 					| UInt64(self.data[self.idx + 6]) << 48
 					| UInt64(self.data[self.idx + 7]) << 56
+			
 			v = Double(bitPattern: iv)
 		}
 		self.idx += 8
@@ -162,7 +162,7 @@ BinaryReader
 	
 	mutating
 	func
-	seek(to inOffset: UInt)
+	seek(to inOffset: Int)
 	{
 		precondition(inOffset >= 0 && inOffset < self.data.count, "seek(to: \(inOffset)) out of bounds")
 		self.idx = inOffset
@@ -173,17 +173,17 @@ BinaryReader
 	seek(to inOffset: UInt64)
 	{
 		precondition(inOffset >= 0 && inOffset < self.data.count, "seek(to: \(inOffset)) out of bounds")
-		self.idx = inOffset
+		self.idx = Int(inOffset)
 	}
 	
 	mutating
 	func
 	seek(to inOffset: UInt32)
 	{
-		seek(to: UInt(inOffset))
+		seek(to: Int(inOffset))
 	}
 	
 	@usableFromInline	let data			:	Data
-	@usableFromInline	var idx				:	UInt64		=	0
+	@usableFromInline	var idx				:	Int		=	0
 	@usableFromInline	var bigEndian						=	true
 }
