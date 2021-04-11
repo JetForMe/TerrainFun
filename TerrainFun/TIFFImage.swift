@@ -66,6 +66,7 @@ TIFFImageA
 			{
 				throw Error.invalidOffsetSize(Int(offsetByteSize))
 			}
+			self.offsetSize = Int(offsetByteSize)
 			let padding: UInt16 = self.reader.get()			//	Bytes 6-7, should be zero
 			if padding != 0
 			{
@@ -91,142 +92,95 @@ TIFFImageA
 		for _ in 0..<entryCount
 		{
 			let de = readDirectoryEntry()
-			self.directoryEntries.append(de)
-			debugLog("Entry: \(de)")
-			if let tag = de.tag
+			if case .unknown = de.tag
 			{
-				switch (tag)
-				{
-					case .imageWidth:
-						ifd.width = try de.uint32()
+				debugLog("Unknown tag \(de.tag)")
+			}
+			else
+			{
+				self.directoryEntries[de.tag] = de
+			}
+			debugLog("Processing \(de)")
+			switch (de.tag)
+			{
+				case .imageWidth:
+					ifd.width = try de.uint32()
+				
+				case .imageLength:
+					ifd.height = try de.uint32()
+				
+				case .bitsPerSample:
+					ifd.bitsPerSample = UInt16(try de.uint32())
 					
-					case .imageLength:
-						ifd.height = try de.uint32()
+				case .compression:
+					ifd.compression = try CompressionType.compression(fromVal: de.offset)
+				
+				case .photometricInterpretation:
+					ifd.blackIsZero = de.offset != 0
 					
-					case .bitsPerSample:
-						ifd.bitsPerSample = UInt16(try de.uint32())
-						
-					case .compression:
-						ifd.compression = try CompressionType.compression(fromVal: de.offset)
+				case .stripOffsets:
+					try self.reader.at(offset: de.offset)
+					{
+						ifd.stripOffsets = try read(count: de.count, ofType: de.type)
+					}
+				
+				case .samplesPerPixel:
+					ifd.samplesPerPixel = UInt16(try de.uint32())
+				
+				case .rowsPerStrip:
+					ifd.rowsPerStrip = try de.uint32()
+					break
+				
+				case .stripByteCounts:
+					try self.reader.at(offset: de.offset)
+					{
+						ifd.stripByteCounts = try read(count: de.count, ofType: de.type)
+					}
+				
+				case .xResolution:
+					let res: Rational = self.reader.get()
+					debugLog("xres: \(res)")
+				
+				case .planarConfiguration:
+					ifd.planarConfiguration = UInt16(try de.uint32())
+				
+				case .predictor:
+					ifd.predictor = try Predictor.from(rawValue: UInt32(de.offset))
 					
-					case .photometricInterpretation:
-						ifd.blackIsZero = de.offset != 0
-						
-					case .stripOffsets:
-						let saveIdx = self.reader.idx
-						self.reader.seek(to: de.offset)
-						
-						if de.type == .short
-						{
-							for _ in 0..<de.count
-							{
-								let v: UInt16 = self.reader.get()
-								ifd.stripOffsets.append(UInt64(v))
-							}
-						}
-						else if de.type == .long
-						{
-							for _ in 0..<de.count
-							{
-								let v: UInt32 = self.reader.get()
-								ifd.stripOffsets.append(UInt64(v))
-							}
-						}
-						else
-						{
-							throw Error.invalidTIFFFormat
-						}
-						self.reader.seek(to: saveIdx)
+				case .tileWidth:
+					ifd.tileWidth = try de.uint32()
 					
-					case .samplesPerPixel:
-						ifd.samplesPerPixel = UInt16(try de.uint32())
+				case .tileLength:
+					ifd.tileLength = try de.uint32()
+				
+				case .tileOffsets:
+					try self.reader.at(offset: de.offset)
+					{
+						ifd.tileOffsets = try read(count: de.count, ofType: de.type)
+					}
 					
-					case .rowsPerStrip:
-						ifd.rowsPerStrip = try de.uint32()
-						break
+				case .tileByteCounts:
+					try self.reader.at(offset: de.offset)
+					{
+						ifd.tileByteCounts = try read(count: de.count, ofType: de.type)
+					}
 					
-					case .stripByteCounts:
-						let saveIdx = self.reader.idx
-						self.reader.seek(to: de.offset)
-						ifd.stripByteCounts = self.reader.get(count: de.count)
-//						if de.type == .short
-//						{
-//							for _ in 0..<de.count
-//							{
-//								let v: UInt16 = self.reader.get()
-//								ifd.stripByteCounts.append(UInt32(v))
-//							}
-//						}
-//						else if de.type == .long
-//						{
-//							for _ in 0..<de.count
-//							{
-//								let v: UInt32 = self.reader.get()
-//								ifd.stripByteCounts.append(v)
-//							}
-//						}
-//						else
-//						{
-//							throw Error.invalidTIFFFormat
-//						}
-						self.reader.seek(to: saveIdx)
-					
-					case .xResolution:
-						let res: Rational = self.reader.get()
-						debugLog("xres: \(res)")
-					
-					case .planarConfiguration:
-						ifd.planarConfiguration = UInt16(try de.uint32())
-					
-					case .predictor:
-						ifd.predictor = try Predictor.predictor(from: UInt32(de.offset))
-						
-					case .tileWidth:
-						ifd.tileWidth = try de.uint32()
-						
-					case .tileLength:
-						ifd.tileLength = try de.uint32()
-					
-					case .tileOffsets:
-						let saveIdx = self.reader.idx
-						ifd.tileOffsets = self.reader.get(count: de.count)
-						self.reader.seek(to: saveIdx)
-						
-					case .tileByteCounts:
-						let saveIdx = self.reader.idx
-						if de.type == .long
-						{
-							ifd.tileByteCounts = self.reader.get(count: de.count)
-						}
-						else if de.type == .short
-						{
-							let vals: [UInt16] = self.reader.get(count: de.count)
-							ifd.tileByteCounts = vals.map { UInt64($0) }
-						}
-						else
-						{
-							throw Error.invalidTIFFFormat
-						}
-						self.reader.seek(to: saveIdx)
-						
-					case .sampleFormat:
-						ifd.sampleFormat = UInt16(try de.uint32())
-					
-					case .modelPixelScale:
-						let saveIdx = self.reader.idx
-						self.reader.seek(to: de.offset)
-						
+				case .sampleFormat:
+					ifd.sampleFormat = UInt16(try de.uint32())
+				
+				case .modelPixelScale:
+					try self.reader.at(offset: de.offset)
+					{
 						//	Read three doubles…
 						
 						ifd.scaleX = self.reader.get()
 						ifd.scaleY = self.reader.get()
 						ifd.scaleZ = self.reader.get()
-						self.reader.seek(to: saveIdx)
-					
-					case .modelTiePoint:
-						let saveIdx = self.reader.idx
-						self.reader.seek(to: de.offset)
-						
+					}
+				
+				case .modelTiePoint:
+					try self.reader.at(offset: de.offset)
+					{
 						//	Read N*6 doubles (N is number of tie points)…
 						
 						let tiePointCount = de.count / 6
@@ -239,67 +193,78 @@ TIFFImageA
 													y: self.reader.get(),
 													z: self.reader.get())
 							ifd.modelTiePoints.append(mtp)
+							debugLog("Model Tie Point: \(mtp)")
 						}
-						self.reader.seek(to: saveIdx)
+					}
+				
+				case .gdalMetadata:
+					break
+				
+				case .gdalNoData:
+					let s = try readString(entry: de)
+					let v = Int(s)
+					ifd.gdalNoData = v
+				
+				case .geoKeyDirectory:
+					//	This tag is an array of SHORTs, primarily grouped into blocks of four,
+					//	with the first four being the header.
 					
-					case .gdalMetadata:
-						break
+					assert(de.type == .short)
+					assert(de.count >= 4)
 					
-					case .gdalNoData:
-						break
-					
-					case .geoKeyDirectory:
-						assert(de.type == .short)
-						assert(de.count >= 4)
-						let saveIdx = self.reader.idx
-						self.reader.seek(to: de.offset)
+					try self.reader.at(offset: de.offset)
+					{
+						//	Read the header information…
+						
 						let keyDirectoryVersion: UInt16 = self.reader.get()
+						if keyDirectoryVersion != 1
+						{
+							//	TODO: Better to throw an exception here?
+							debugLog("Unknown key directory version (\(keyDirectoryVersion)).")
+							return
+						}
+						
 						let keyRevision: UInt16 = self.reader.get()
 						let minorVersion: UInt16 = self.reader.get()
+						debugLog("Key revision: \(keyRevision).\(minorVersion)")
+						
 						let keyCount: UInt16 = self.reader.get()
-						assert(de.count == keyCount * 4 + 4)
+						
+						//	We should not have more keys than the count of the directory
+						//	entry would allow…
+						
+						assert(de.count >= keyCount * 4 + 4, "de.count (\(de.count)) < \(keyCount * 4 + 4)")
+						//	TODO: Handle the excess data in this Entry.
+						
+						//	Read each key…
+						
 						for _ in 0..<keyCount
 						{
 							let geoKey = readGeoKeyEntry()
-							ifd.geoKeys.append(geoKey)
+							ifd.geoKeyEntries.append(geoKey)
 							debugLog("\(geoKey)")
 						}
-						self.reader.seek(to: saveIdx)
-					
-					case .geoDoubleParams:
-						ifd.geoDoubleParams = [Double](repeating: 0.0, count: Int(de.count))
-						let saveIdx = self.reader.idx
-						self.reader.seek(to: de.offset)
-						for idx in 0..<Int(de.count)
-						{
-							ifd.geoDoubleParams[idx] = self.reader.get()
-						}
-						self.reader.seek(to: saveIdx)
-						
-					
-					default:
-						debugLog("Skiping tag \(tag)")
-						break;
-				}
-			}
-		}
-		
-		//	Post-process the GeoKeys…
-		
-		for gk in ifd.geoKeys
-		{
-			switch (gk.key)
-			{
-				case .modelType:
-					ifd.modelType = try ModelType.model(from: UInt32(gk.valueOffset))
+					}
 				
-				case .rasterType:
-					ifd.rasterType = try RasterType.raster(from: UInt32(gk.valueOffset))
-				
+				case .geoDoubleParams:
+					try self.reader.at(offset: de.offset)
+					{
+						ifd.geoDoubleParams = self.reader.get(count: de.count)
+					}
+					
+				case .geoAsciiParams:
+					let v = try readString(entry: de)
+					ifd.geoStrings = v.split(separator: "|").map { String($0) }
+					
 				default:
-					debugLog("Skipping unhandled geoKey \(String(describing: gk.key))")
+					debugLog("Skipping tag \(de.tag)")
+					break;
 			}
 		}
+		
+		//	Post-process the geoKeyEntries…
+		
+		try processGeoKeyEntries(ifd: &ifd)
 		
 		//	More directories?
 		
@@ -340,6 +305,76 @@ TIFFImageA
 		return offset
 	}
 	
+	mutating
+	func
+	read(count inCount: UInt64, ofType inType: TagType)
+		throws
+		-> [UInt64]
+	{
+		if inType == .short
+		{
+			let v: [UInt16] = self.reader.get(count: inCount)
+			return v.map { UInt64($0) }
+		}
+		else if inType == .long
+		{
+			let v: [UInt32] = self.reader.get(count: inCount)
+			return v.map { UInt64($0) }
+		}
+		else if inType == .long8
+		{
+			let v: [UInt64] = self.reader.get(count: inCount)
+			return v
+		}
+		else
+		{
+			throw Error.invalidTIFFFormat
+		}
+	}
+	
+	mutating
+	func
+	readString(entry inDE: DirectoryEntry)
+		throws
+		-> String
+	{
+		//	A string must contain a trailing null, and we’re going to ignore that,
+		//	so a non-empty string must be at least two bytes…
+		//	TODO: Does TIFF allow empty strings?
+		
+		if inDE.count < 2
+		{
+			throw Error.invalidTIFFFormat
+		}
+		
+		if inDE.count < self.offsetSize			//	The string fits in the value TODO: -1?
+		{
+			let s: String = try self.reader.at(offset: inDE.location + 4 + UInt64(self.offsetSize))
+			{
+				if let s: String = self.reader.get(count: inDE.count - 1)		//	Exclude trailing NULL
+				{
+					debugLog("String \(s)")
+					return s
+				}
+				throw Error.invalidTIFFFormat
+			}
+			return s
+		}
+		else
+		{
+			let s: String = try self.reader.at(offset: inDE.offset)
+			{
+				if let s: String = self.reader.get(count: inDE.count - 1)		//	Exclude trailing NULL
+				{
+					debugLog("String '\(s)'")
+					return s
+				}
+				throw Error.invalidTIFFFormat
+			}
+			return s
+		}
+	}
+	
 	/**
 		Reads a DirectoryEntry at the current reader index. When complete, the current index
 		points to the byte after the entry.
@@ -350,13 +385,11 @@ TIFFImageA
 	readDirectoryEntry()
 		-> DirectoryEntry
 	{
+		let loc = self.reader.idx
 		let tagV: UInt16 = self.reader.get()
-		let tag = Tag(rawValue: tagV)
-		if tag == nil
-		{
-			debugLog("Unknown tag \(tagV)")
-		}
-		let de = DirectoryEntry(tag: tag,
+		let tag = Tag.from(rawValue: tagV)
+		let de = DirectoryEntry(location: UInt64(loc),
+								tag: tag,
 								type: TagType(rawValue: self.reader.get()) ?? .undefined,
 								count: readOffset(),
 								offset: readOffset())
@@ -372,11 +405,60 @@ TIFFImageA
 	readGeoKeyEntry()
 		-> GeoKeyEntry
 	{
-		let gke = GeoKeyEntry(key: GeoKey(rawValue: self.reader.get()),
-								tagLoc: Tag(rawValue: self.reader.get()),
+		let kv: UInt16 = self.reader.get()
+		let geoKey = GeoKey.from(rawValue: kv)
+		let gke = GeoKeyEntry(key: geoKey,
+								tagLoc: Tag.from(rawValue: self.reader.get()),
 								count: self.reader.get(),
 								valueOffset: self.reader.get())
 		return gke
+	}
+	
+	mutating
+	func
+	processGeoKeyEntries(ifd inIFD: inout IFD)
+		throws
+	{
+		for gk in inIFD.geoKeyEntries
+		{
+			switch (gk.key)
+			{
+				case .modelType:
+					inIFD.modelType = try ModelType.model(from: UInt32(gk.valueOffset))
+				
+				case .rasterType:
+					inIFD.rasterType = try RasterType.raster(from: UInt32(gk.valueOffset))
+				
+				case .angularUnits:
+					inIFD.angularUnits = try AngularUnit.from(rawValue: UInt16(gk.valueOffset))
+				
+				case .geoDatum:
+					inIFD.datum = GeodeticDatum(rawValue: UInt16(gk.valueOffset)) ?? .undefined
+				
+				case .geogEllipsoid:
+					inIFD.ellipsoid = GeogEllipsoid(rawValue: UInt16(gk.valueOffset)) ?? .undefined
+				
+				case .semiMajorAxis:
+					inIFD.semiMajorAxis = inIFD.geoDoubleParams[Int(gk.valueOffset)]
+					
+				case .semiMinorAxis:
+					inIFD.semiMinorAxis = inIFD.geoDoubleParams[Int(gk.valueOffset)]
+				
+				case .geogPrimeMeridianLong:
+					inIFD.primeMeridianLongitude = inIFD.geoDoubleParams[Int(gk.valueOffset)]
+					
+				case .toWGS84:
+					inIFD.toWGS84 = [Double](repeating: 0.0, count: Int(gk.count))
+					for idx in 0 ..< gk.count
+					{
+						let d = inIFD.geoDoubleParams[Int(gk.valueOffset + idx)]
+						inIFD.toWGS84[Int(idx)] = d
+					}
+				
+				default:
+					debugLog("Skipping unhandled geoKey \(String(describing: gk.key))")
+			}
+		}
 	}
 	
 	mutating
@@ -400,12 +482,12 @@ TIFFImageA
 		let idx = yInStrip * Int(ifd.width) + inX
 		if ifd.bitsPerSample == 16
 		{
-			let saveIdx = self.reader.idx
 			let offset = Int(stripOffset) + 2 * idx
-			self.reader.seek(to: offset)
-			let v: UInt16 = self.reader.get()
-			self.reader.seek(to: saveIdx)
-			return v
+			let v: UInt16 = self.reader.at(offset: UInt64(offset))
+			{
+				let v: UInt16 = self.reader.get()
+				return v
+			}
 		}
 		else
 		{
@@ -430,6 +512,8 @@ TIFFImageA
 		var		rowsPerStrip			:	UInt32						=	0
 		var		stripByteCounts			:	[UInt64]					=	[UInt64]()
 		var		stripOffsets			:	[UInt64]					=	[UInt64]()
+		var		stripShortData			:	[[UInt16]?]?
+		
 		var		bitsPerSample			:	UInt16						=	0
 		var		samplesPerPixel			:	UInt16						=	0
 		var		xRes					:	Int							=	0
@@ -451,15 +535,31 @@ TIFFImageA
 		var		scaleY					:	Double						=	1.0
 		var		scaleZ					:	Double						=	1.0
 		var		modelTiePoints											=	[ModelTiePoint]()
-		var		geoKeys													=	[GeoKeyEntry]()
+		var		geoKeyEntries											=	[GeoKeyEntry]()
 		var		geoDoubleParams											=	[Double]()
+		var		geoStrings												=	[String]()
+		
 		var		modelType				:	ModelType?
 		var		rasterType				:	RasterType?
+		var		angularUnits			:	AngularUnit					=	.degree
+		var		datum					:	GeodeticDatum				=	.undefined
+		var		ellipsoid				:	GeogEllipsoid				=	.undefined
+		var		semiMajorAxis			:	Double						=	0.0
+		var		semiMinorAxis			:	Double						=	0.0
+		var		invFlattening			:	Double						=	Double.infinity
+		var		azimuthUnits			:	AngularUnit					=	.degree
+		var		primeMeridianLongitude	:	Double						=	0.0
+		var		toWGS84					:	[Double]					=	[Double]()		//	https://trac.osgeo.org/geotiff/wiki/TOWGS84GeoKey
 		
+		var		gdalNoData				:	Int?
 		
 		var description: String
 		{
-			return "IFD(width: \(self.width), height: \(self.height), resUnit: \(self.resolutionUnit), xRes: \(self.xRes), yRes: \(self.yRes))"
+			return
+			"""
+			IFD(width: \(self.width), height: \(self.height), resUnit: \(self.resolutionUnit), xRes: \(self.xRes), yRes: \(self.yRes), \
+			strips: \(self.stripOffsets.count), rowsPerStrip: \(self.rowsPerStrip))
+			"""
 		}
 	}
 	
@@ -489,7 +589,8 @@ TIFFImageA
 	struct
 	DirectoryEntry
 	{
-		let		tag			:	Tag?
+		let		location	:	UInt64			//	Location in file of this Entry
+		let		tag			:	Tag
 		let		type		:	TagType
 		let		count		:	UInt64
 		let		offset		:	UInt64
@@ -524,29 +625,80 @@ TIFFImageA
 	struct
 	GeoKeyEntry
 	{
-		let		key			:	GeoKey?
-		let		tagLoc		:	Tag?
+		let		key			:	GeoKey
+		let		tagLoc		:	Tag
 		let		count		:	UInt16
 		let		valueOffset	:	UInt16
 	}
 	
 	enum
-	GeoKey : UInt16
+	GeoKey
 	{
-		case modelType			=	1024
-		case rasterType			=	1025
-		case citation			=	1026
+		case unknown(UInt16)
 		
-		case geographicType		=	2048
-		case geoCitation		=	2049
-		case geoDatum			=	2050
-		case linearUnits		=	2042
-		case linearUnitSize		=	2053		//	meters
-		case angularUnits		=	2054		//	radians
-		case semiMajorAxis		=	2057		//	GeogLinearUnits
-		case semiMinorAxis		=	2058		//	GeogLinearUnits
-		case inverseFlatteing	=	2059		//	Rational
-		case toWGS84			=	2062		//	https://trac.osgeo.org/geotiff/wiki/TOWGS84GeoKey
+		case modelType
+		case rasterType
+		case citation
+		
+		case geographicType
+		case geoCitation
+		case geoDatum
+		case linearUnits
+		case linearUnitSize						//	meters
+		case angularUnits						//	radians
+		case angularUnitSize					//	radians
+		case geogEllipsoid						//	Section 6.3.2.3 code
+		case semiMajorAxis						//	GeogLinearUnits
+		case semiMinorAxis						//	GeogLinearUnits
+		case inverseFlatteing					//	Rational
+		case azimuthUnits						//	Section 6.3.1.4 code
+		case geogPrimeMeridianLong				//	GeogAngularUnits
+		case toWGS84							//	https://trac.osgeo.org/geotiff/wiki/TOWGS84GeoKey
+		
+//		case modelType			=	1024
+//		case rasterType			=	1025
+//		case citation			=	1026
+//
+//		case geographicType		=	2048
+//		case geoCitation		=	2049
+//		case geoDatum			=	2050
+//		case linearUnits		=	2042
+//		case linearUnitSize		=	2053		//	meters
+//		case angularUnits		=	2054		//	radians
+//		case semiMajorAxis		=	2057		//	GeogLinearUnits
+//		case semiMinorAxis		=	2058		//	GeogLinearUnits
+//		case inverseFlatteing	=	2059		//	Rational
+//		case toWGS84			=	2062		//	https://trac.osgeo.org/geotiff/wiki/TOWGS84GeoKey
+		
+		static
+		func
+		from(rawValue inRaw: UInt16)
+			-> GeoKey
+		{
+			return self.rawValueMapping[inRaw] ?? .unknown(inRaw)
+		}
+		
+		static let rawValueMapping: [ UInt16 : GeoKey ] =
+		[
+			1024 : .modelType,
+			1025 : .rasterType,
+			1026 : .citation,
+
+			2048 : .geographicType,
+			2049 : .geoCitation,
+			2050 : .geoDatum,
+			2042 : .linearUnits,
+			2053 : .linearUnitSize,
+			2054 : .angularUnits,
+			2055 : .angularUnitSize,
+			2056 : .geogEllipsoid,
+			2057 : .semiMajorAxis,
+			2058 : .semiMinorAxis,
+			2059 : .inverseFlatteing,
+			2060 : .azimuthUnits,
+			2061 : .geogPrimeMeridianLong,
+			2062 : .toWGS84,
+		]
 	}
 	
 	enum
@@ -634,40 +786,118 @@ TIFFImageA
 	}
 	
 	enum
-	Tag : UInt16
+	Tag : Hashable
 	{
-		case imageWidth							=	256
-		case imageLength						=	257
-		case bitsPerSample						=	258
-		case compression						=	259
-		case photometricInterpretation			=	262
-		case stripOffsets						=	273
-		case samplesPerPixel					=	277
-		case rowsPerStrip						=	278
-		case stripByteCounts					=	279
-		case xResolution						=	282				//	Rational
-		case yResolution						=	283				//	Rational
-		case planarConfiguration				=	284
-		case xPosition							=	286
-		case yPosition							=	287
-		case resolutionUnit						=	296
+		case unknown(UInt16)
+		case imageWidth
+		case imageLength
+		case bitsPerSample
+		case compression
+		case photometricInterpretation
+		case stripOffsets
+		case samplesPerPixel
+		case rowsPerStrip
+		case stripByteCounts
+		case xResolution											//	Rational
+		case yResolution											//	Rational
+		case planarConfiguration
+		case xPosition
+		case yPosition
+		case resolutionUnit
 		
-		case predictor							=	317
-		case tileWidth							=	322
-		case tileLength							=	323
-		case tileOffsets						=	324
-		case tileByteCounts						=	325
+		case predictor
+		case tileWidth
+		case tileLength
+		case tileOffsets
+		case tileByteCounts
 		
-		case sampleFormat						=	339
+		case sampleFormat
 		
-		case modelPixelScale					=	33550			//	double
-		case modelTiePoint						=	33922
-		case geoKeyDirectory					=	34735
-		case geoDoubleParams					=	34736
-		case geoAsciiParams						=	34737
+		case modelPixelScale										//	double
+		case modelTiePoint
+		case geoKeyDirectory
+		case geoDoubleParams
+		case geoAsciiParams
 		
-		case gdalMetadata						=	42112			//	ascii	https://www.awaresystems.be/imaging/tiff/tifftags/gdal_metadata.html
-		case gdalNoData							=	42113			//	ascii	https://www.awaresystems.be/imaging/tiff/tifftags/gdal_nodata.html
+		case gdalMetadata											//	ascii	https://www.awaresystems.be/imaging/tiff/tifftags/gdal_metadata.html
+		case gdalNoData												//	ascii	https://www.awaresystems.be/imaging/tiff/tifftags/gdal_nodata.html
+		
+//		case imageWidth							=	256
+//		case imageLength						=	257
+//		case bitsPerSample						=	258
+//		case compression						=	259
+//		case photometricInterpretation			=	262
+//		case stripOffsets						=	273
+//		case samplesPerPixel					=	277
+//		case rowsPerStrip						=	278
+//		case stripByteCounts					=	279
+//		case xResolution						=	282				//	Rational
+//		case yResolution						=	283				//	Rational
+//		case planarConfiguration				=	284
+//		case xPosition							=	286
+//		case yPosition							=	287
+//		case resolutionUnit						=	296
+//
+//		case predictor							=	317
+//		case tileWidth							=	322
+//		case tileLength							=	323
+//		case tileOffsets						=	324
+//		case tileByteCounts						=	325
+//
+//		case sampleFormat						=	339
+//
+//		case modelPixelScale					=	33550			//	double
+//		case modelTiePoint						=	33922
+//		case geoKeyDirectory					=	34735
+//		case geoDoubleParams					=	34736
+//		case geoAsciiParams						=	34737
+//
+//		case gdalMetadata						=	42112			//	ascii	https://www.awaresystems.be/imaging/tiff/tifftags/gdal_metadata.html
+//		case gdalNoData							=	42113			//	ascii	https://www.awaresystems.be/imaging/tiff/tifftags/gdal_nodata.html
+		
+		static
+		func
+		from(rawValue inRaw: UInt16)
+			-> Tag
+		{
+			return self.rawValueMapping[inRaw] ?? .unknown(inRaw)
+		}
+		
+		static let rawValueMapping: [ UInt16 : Tag ] =
+		[
+			256 : .imageWidth,
+			257 : .imageLength,
+			258 : .bitsPerSample,
+			259 : .compression,
+			262 : .photometricInterpretation,
+			273 : .stripOffsets,
+			277 : .samplesPerPixel,
+			278 : .rowsPerStrip,
+			279 : .stripByteCounts,
+			282 : .xResolution,
+			283 : .yResolution,
+			284 : .planarConfiguration,
+			286 : .xPosition,
+			287 : .yPosition,
+			296 : .resolutionUnit,
+
+			317 : .predictor,
+			322 : .tileWidth,
+			323 : .tileLength,
+			324 : .tileOffsets,
+			325 : .tileByteCounts,
+
+			339 : .sampleFormat,
+
+			33550 : .modelPixelScale,
+			33922 : .modelTiePoint,
+			34735 : .geoKeyDirectory,
+			34736 : .geoDoubleParams,
+			34737 : .geoAsciiParams,
+
+			42112 : .gdalMetadata,
+			42113 : .gdalNoData,
+		]
 	}
 	
 	enum TagType : UInt16
@@ -724,7 +954,7 @@ TIFFImageA
 		
 		static
 		func
-		predictor(from inVal: UInt32)
+		from(rawValue inVal: UInt32)
 			throws
 			-> Predictor
 		{
@@ -739,9 +969,63 @@ TIFFImageA
 		}
 	}
 	
+	enum
+	AngularUnit
+	{
+		case radian
+		case degree
+		case arcMinute
+		case arcSecond
+		case gradian
+		case gon
+		case dms
+		case dmsHemisphere
+		
+		static
+		func
+		from(rawValue inValue: UInt16)
+			throws
+			-> AngularUnit
+		{
+			guard let v = self.rawValueMapping[inValue] else
+			{
+				throw Error.invalidTIFFFormat
+			}
+			
+			return v
+		}
+		
+		static let rawValueMapping: [ UInt16 : AngularUnit ] =
+		[
+			9101 : .radian,
+			9102 : .degree,
+			9103 : .arcMinute,
+			9104 : .arcSecond,
+			9105 : .gradian,
+			9106 : .gon,
+			9107 : .dms,
+			9108 : .dmsHemisphere,
+		]
+	}
+	
+	enum
+	GeodeticDatum : UInt16
+	{
+		case undefined				=	0
+		case userDefined			=	32767
+	}
+	
+	enum
+	GeogEllipsoid : UInt16
+	{
+		case undefined				=	0
+		case userDefined			=	32767
+	}
+	
 	var			formatVersion		:	FormatVersion	=	.v42
+	var			offsetSize			:	Int				=	4			//	Size of offsets in bytes. 8 for BigTIFF/.v43
 	var			reader				:	BinaryReader
-	var			directoryEntries						=	[DirectoryEntry]()
+	var			directoryEntries						=	[Tag:DirectoryEntry]()
 	var			ifd					:	IFD?
 }
 
@@ -751,7 +1035,7 @@ extension
 BinaryReader
 {
 	@inlinable
-	mutating
+	//mutating
 	func
 	get()
 		-> TIFFImageA.Rational
@@ -760,69 +1044,14 @@ BinaryReader
 		let d: UInt32 = get()
 		return TIFFImageA.Rational(numerator: n, denominator: d)
 	}
-	
-	/**
-		Read count UInt16s at the current offset.
-	*/
-	
-	@inlinable
-	mutating
-	func
-	get(count inCount: UInt64)
-		-> [UInt16]
+}
+
+extension
+TIFFImageA.ModelTiePoint : CustomDebugStringConvertible
+{
+	var
+	debugDescription: String
 	{
-		precondition(inCount < Int.max)		//	Throw exception?
-		
-		var result = [UInt16](repeating: 0, count: Int(inCount))
-		for idx in 0..<Int(inCount)
-		{
-			result[idx] = get()
-		}
-		
-		return result
+		return "I: \(self.i), J: \(self.j), K: \(self.k) -> X: \(self.x), Y: \(self.y), Z: \(self.z)"
 	}
-	
-	/**
-		Read count UInt32s at the current offset.
-	*/
-	
-	@inlinable
-	mutating
-	func
-	get(count inCount: UInt64)
-		-> [UInt32]
-	{
-		precondition(inCount < Int.max)		//	Throw exception?
-		
-		var result = [UInt32](repeating: 0, count: Int(inCount))
-		for idx in 0..<Int(inCount)
-		{
-			result[idx] = get()
-		}
-		
-		return result
-	}
-	
-	/**
-		Read count UInt64s at the current offset.
-	*/
-	
-	@inlinable
-	mutating
-	func
-	get(count inCount: UInt64)
-		-> [UInt64]
-	{
-		precondition(inCount < Int.max)		//	Throw exception?
-		
-		var result = [UInt64](repeating: 0, count: Int(inCount))
-		for idx in 0..<Int(inCount)
-		{
-			result[idx] = get()
-		}
-		
-		return result
-	}
-	
-	
 }

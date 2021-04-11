@@ -11,7 +11,7 @@ import Foundation
 
 
 
-struct
+class
 BinaryReader
 {
 	init(data inData: Data)
@@ -46,7 +46,7 @@ BinaryReader
 //	}
 	
 	@inlinable
-	mutating
+	//mutating
 	func
 	get()
 		-> UInt64
@@ -68,7 +68,7 @@ BinaryReader
 	}
 	
 	@inlinable
-	mutating
+	//mutating
 	func
 	get()
 		-> UInt32
@@ -93,7 +93,7 @@ BinaryReader
 	}
 	
 	@inlinable
-	mutating
+	//mutating
 	func
 	get()
 		-> UInt16
@@ -114,7 +114,7 @@ BinaryReader
 	}
 	
 	@inlinable
-	mutating
+	//mutating
 	func
 	get()
 		-> Double
@@ -152,7 +152,16 @@ BinaryReader
 		return v
 	}
 	
-	mutating
+	func
+	get(count inCount: UInt64)
+		-> String?
+	{
+		let r = self.idx ..< self.idx + Int(inCount)
+		let s = String(data: self.data[r], encoding: .ascii)
+		return s
+	}
+	
+	//mutating
 	func
 	seek(by inDelta: Int)
 	{
@@ -160,7 +169,7 @@ BinaryReader
 		self.idx += inDelta
 	}
 	
-	mutating
+	//mutating
 	func
 	seek(to inOffset: Int)
 	{
@@ -168,7 +177,7 @@ BinaryReader
 		self.idx = inOffset
 	}
 	
-	mutating
+	//mutating
 	func
 	seek(to inOffset: UInt64)
 	{
@@ -176,14 +185,118 @@ BinaryReader
 		self.idx = Int(inOffset)
 	}
 	
-	mutating
+	//mutating
 	func
 	seek(to inOffset: UInt32)
 	{
 		seek(to: Int(inOffset))
 	}
 	
+	//mutating
+	func
+	at<ReturnType>(offset inOffset: UInt64, op inOp: () throws -> ReturnType)
+		throws
+		-> ReturnType
+	{
+		let saveIdx = self.idx
+		defer { seek(to: saveIdx) }
+		seek(to: inOffset)
+		return try inOp()
+	}
+	
 	@usableFromInline	let data			:	Data
-	@usableFromInline	var idx				:	Int		=	0
+	@usableFromInline	var idx				:	Int			=	0
 	@usableFromInline	var bigEndian						=	true
+}
+
+/**
+	Array readers.
+*/
+
+extension
+BinaryReader
+{
+	/**
+		Read count UInt16s at the current offset.
+	*/
+	
+	@inlinable
+	//mutating
+	func
+	get(count inCount: UInt64)
+		-> [UInt16]
+	{
+		precondition(inCount < Int.max)		//	Throw exception?
+		
+		var result = [UInt16](repeating: 0, count: Int(inCount))
+		for idx in 0..<Int(inCount)
+		{
+			result[idx] = get()
+		}
+		
+		return result
+	}
+	
+	/**
+		Read count UInt32s at the current offset.
+	*/
+	
+	@inlinable
+	//mutating
+	func
+	get(count inCount: UInt64)
+		-> [UInt32]
+	{
+		precondition(inCount < Int.max)		//	Throw exception?
+		
+		var result = [UInt32](repeating: 0, count: Int(inCount))
+		for idx in 0..<Int(inCount)
+		{
+			result[idx] = get()
+		}
+		
+		return result
+	}
+	
+	/**
+		Read count UInt64s at the current offset.
+	*/
+	
+	@inlinable
+	//mutating
+	func
+	get(count inCount: UInt64)
+		-> [UInt64]
+	{
+		precondition(inCount < Int.max)		//	Throw exception?
+		
+		var result = [UInt64](repeating: 0, count: Int(inCount))
+		for idx in 0..<Int(inCount)
+		{
+			result[idx] = get()
+		}
+		
+		return result
+	}
+	
+	/**
+		Read count Doubles at the current offset.
+	*/
+	
+	@inlinable
+	//mutating
+	func
+	get(count inCount: UInt64)
+		-> [Double]
+	{
+		precondition(inCount < Int.max)		//	Throw exception?
+		
+		var result = [Double](repeating: 0, count: Int(inCount))
+		for idx in 0..<Int(inCount)
+		{
+			result[idx] = get()
+		}
+		
+		return result
+	}
 }
