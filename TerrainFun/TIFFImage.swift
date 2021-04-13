@@ -464,6 +464,7 @@ TIFFImageA
 	mutating
 	func
 	pixelValue(x inX : Int, y inY: Int)
+		throws
 		-> UInt16
 	{
 		guard
@@ -483,11 +484,12 @@ TIFFImageA
 		if ifd.bitsPerSample == 16
 		{
 			let offset = Int(stripOffset) + 2 * idx
-			let v: UInt16 = self.reader.at(offset: UInt64(offset))
+			let v: UInt16 = try self.reader.at(offset: UInt64(offset))
 			{
 				let v: UInt16 = self.reader.get()
 				return v
 			}
+			return v
 		}
 		else
 		{
@@ -555,8 +557,7 @@ TIFFImageA
 		
 		var description: String
 		{
-			return
-			"""
+			return """
 			IFD(width: \(self.width), height: \(self.height), resUnit: \(self.resolutionUnit), xRes: \(self.xRes), yRes: \(self.yRes), \
 			strips: \(self.stripOffsets.count), rowsPerStrip: \(self.rowsPerStrip))
 			"""
@@ -1054,4 +1055,73 @@ TIFFImageA.ModelTiePoint : CustomDebugStringConvertible
 	{
 		return "I: \(self.i), J: \(self.j), K: \(self.k) -> X: \(self.x), Y: \(self.y), Z: \(self.z)"
 	}
+}
+
+class
+BigTIFFImageProvider : CIImageProvider
+{
+	init(tiff inTiffImage: TIFFImageA)
+	{
+	}
+	
+	@objc
+    func
+    provideImageData(_ ioData: UnsafeMutableRawPointer,
+    					bytesPerRow inRowbytes: Int,
+    					origin inX: Int,
+    							_ inY: Int,
+						size inWidth: Int,
+							_ inHeight: Int,
+						userInfo inInfo: Any?)
+	{
+		debugLog("provideImageData(bytesPerRow: \(inRowbytes); origin: \(inX), \(inY); size: \(inWidth), \(inHeight)")
+	}
+}
+
+/**
+	Because this is an informal protocol not defined in any Apple header,
+	we’ll define it here for completeness (and a place to document it).
+*/
+
+@objc
+protocol
+CIImageProvider
+{
+	/**
+		Comments taken from Objective-C header CoreImage/CIImageProvider.h:
+		
+		Callee should initialize the given bitmap with the subregion x,y
+		width,height of the image. (this subregion is defined in the image's
+		local coordinate space, i.e. the origin is the top left corner of
+		the image).
+
+		By default, this method will be called to requests the full image
+		data regardless of what subregion is needed for the current render.
+		All of the image is loaded or none of it is.
+
+		If the `CIImage.providerTileSize` option is specified, then only the
+		tiles that are needed are requested.
+
+		Changing the virtual memory mapping of the supplied buffer (e.g. using
+		vm_copy() to modify it) will give undefined behavior.
+			
+		- Parameters:
+			- ioData: A pre-allocated buffer to contain the image data for the requested tile.
+			- inRowbytes: Bytes per row of the supplied tile buffer.
+			- inX: X-coordinate of the origin of the tile in image space.
+			- inY: Y-coordinate of the origin of the tile in image space.
+			- inWidth: Width of requested tile in image space.
+			- inHeight: Height of requested tile in image space.
+			- inInfo: Information supplied in CIImage constructor.
+	*/
+	
+	@objc
+    func
+    provideImageData(_ ioData: UnsafeMutableRawPointer,
+    					bytesPerRow inRowbytes: Int,
+    					origin inX: Int,
+    							_ inY: Int,
+						size inWidth: Int,
+							_ inHeight: Int,
+						userInfo inInfo: Any?)
 }

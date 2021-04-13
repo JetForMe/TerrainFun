@@ -114,26 +114,26 @@ Document: NSDocument
 		
 		//	Create a triangle mesh from the image data…
 		
-		let meshWidth: CGFloat = 10.0
-		let meshHeight: CGFloat = 10.0
+//		let meshWidth: CGFloat = 10.0
+//		let meshHeight: CGFloat = 10.0
 		
 		//	Start by making vertices for each pixel in the image, starting
 		//	in the lower-left
 		
-		var imgRect = CGRect(x: 0.0, y: 0.0, width: imgWidth, height: imgHeight)
-		guard
-			let cgImage = img.cgImage(forProposedRect: &imgRect, context: nil, hints: nil)
-		else
-		{
-			debugLog("Couldn't get cgimage")
-			return
-		}
+//		var imgRect = CGRect(x: 0.0, y: 0.0, width: imgWidth, height: imgHeight)
+//		guard
+//			let cgImage = img.cgImage(forProposedRect: &imgRect, context: nil, hints: nil)
+//		else
+//		{
+//			debugLog("Couldn't get cgimage")
+//			return
+//		}
 		
-		let data = try! Data(contentsOf: inURL)
-		let tiffImage: TIFFLib.TIFFImage = TIFFReader.readTiff(from: data)
-		let directories: [TIFFFileDirectory] = tiffImage.fileDirectories()
-		let directory: TIFFFileDirectory = directories[0]
-		let des = directory.entries()!
+//		let data = try! Data(contentsOf: inURL)
+//		let tiffImage: TIFFLib.TIFFImage = TIFFReader.readTiff(from: data)
+//		let directories: [TIFFFileDirectory] = tiffImage.fileDirectories()
+//		let directory: TIFFFileDirectory = directories[0]
+//		let des = directory.entries()!
 //		for idx in 0..<des.count
 //		{
 //			let de = des[idx] as! TIFFFileDirectoryEntry
@@ -143,22 +143,23 @@ Document: NSDocument
 //		let rasters: TIFFRasters = directory.readRasters()			//	Expensive
 			
 		let ti = try! TIFFImageA(contentsOfURL: inURL)
+		debugLog("image: \(ti)")
 		
 //		let imgData = CGImageGetdata
-		let xSpan = meshWidth / imgWidth
-		let ySpan = meshHeight / imgHeight
-		
-		var vertices = [SCNVector3]()
-		for y in stride(from: 0.0, to: imgHeight, by: 1.0)
-		{
-			let imgY = imgHeight - y
-			for x in stride(from: 0.0, to: imgWidth, by: 1.0)
-			{
-				let v = SCNVector3(x * xSpan, 0.0, y * ySpan)
-				vertices.append(v)
-			}
-		}
-		let vertexSource = SCNGeometrySource(vertices: vertices)
+//		let xSpan = meshWidth / imgWidth
+//		let ySpan = meshHeight / imgHeight
+//
+//		var vertices = [SCNVector3]()
+//		for y in stride(from: 0.0, to: imgHeight, by: 1.0)
+//		{
+//			let imgY = imgHeight - y
+//			for x in stride(from: 0.0, to: imgWidth, by: 1.0)
+//			{
+//				let v = SCNVector3(x * xSpan, 0.0, y * ySpan)
+//				vertices.append(v)
+//			}
+//		}
+//		let vertexSource = SCNGeometrySource(vertices: vertices)
 		
 	}
 

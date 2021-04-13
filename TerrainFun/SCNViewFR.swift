@@ -61,7 +61,7 @@ SCNViewFR: SCNView
 
 		let delta = inEvent.deltaY
 		let zoomDir = SCNVector3(0.0, 0.0, self.zoomScale * delta * abs(delta / 2.0))			//	Zoom in is in negative Z direction
-		let zd: float3 = float3(zoomDir)
+		let zd: SIMD3<Float> = SIMD3<Float>(zoomDir)
 		self.cameraNode.simdLocalTranslate(by: zd)
 	}
 	
@@ -97,8 +97,8 @@ SCNViewFR: SCNView
 	{
 //		debugLog("mouseMoved")
 
-		let localPt = convert(inEvent.locationInWindow, from: nil)
-		let scene = self.scene as! TerrainEditorScene
+//		let localPt = convert(inEvent.locationInWindow, from: nil)
+//		let scene = self.scene as! TerrainEditorScene
 	}
 	
 	func

@@ -9,16 +9,18 @@
 /* Begin PBXBuildFile section */
 		C63CF80E257F57D500A66A3E /* TIFFLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C63CF80D257F57D500A66A3E /* TIFFLib.framework */; };
 		C63CF80F257F57D500A66A3E /* TIFFLib.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C63CF80D257F57D500A66A3E /* TIFFLib.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		C6AE5D6A24C94F68000EDC78 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5D6924C94F68000EDC78 /* AppDelegate.swift */; };
-		C6AE5D6C24C94F68000EDC78 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5D6B24C94F68000EDC78 /* ViewController.swift */; };
-		C6AE5D6E24C94F68000EDC78 /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5D6D24C94F68000EDC78 /* Document.swift */; };
+		C6864912262468F800035B75 /* TerrainFunApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6864911262468F800035B75 /* TerrainFunApp.swift */; };
+		C686491A2624693200035B75 /* ProjectWindowContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C68649192624693200035B75 /* ProjectWindowContentView.swift */; };
+		C686492E26247F4400035B75 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5D6B24C94F68000EDC78 /* ViewController.swift */; };
+		C686492F26247F4400035B75 /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5D6D24C94F68000EDC78 /* Document.swift */; };
+		C686493026247F4400035B75 /* TerrainEditorScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5DE824C97A6C000EDC78 /* TerrainEditorScene.swift */; };
+		C686493126247F4400035B75 /* SCNViewFR.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5DEC24C97C51000EDC78 /* SCNViewFR.swift */; };
+		C686493426247F4B00035B75 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5D6924C94F68000EDC78 /* AppDelegate.swift */; };
+		C6864938262579B900035B75 /* ProjectDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6864937262579B800035B75 /* ProjectDocument.swift */; };
 		C6AE5D7024C94F6A000EDC78 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C6AE5D6F24C94F6A000EDC78 /* Assets.xcassets */; };
-		C6AE5D7324C94F6A000EDC78 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C6AE5D7124C94F6A000EDC78 /* Main.storyboard */; };
 		C6AE5D7F24C94F6B000EDC78 /* TerrainFunTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5D7E24C94F6B000EDC78 /* TerrainFunTests.swift */; };
 		C6AE5D8A24C94F6B000EDC78 /* TerrainFunUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5D8924C94F6B000EDC78 /* TerrainFunUITests.swift */; };
-		C6AE5DE924C97A6C000EDC78 /* TerrainEditorScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5DE824C97A6C000EDC78 /* TerrainEditorScene.swift */; };
 		C6AE5DEB24C97AE4000EDC78 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5DEA24C97AE4000EDC78 /* Utils.swift */; };
-		C6AE5DED24C97C51000EDC78 /* SCNViewFR.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5DEC24C97C51000EDC78 /* SCNViewFR.swift */; };
 		C6CAB72E24D152C500136F90 /* BinaryReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6CAB72D24D152C500136F90 /* BinaryReader.swift */; };
 		C6CAB73024D1596800136F90 /* TIFFImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6CAB72F24D1596800136F90 /* TIFFImage.swift */; };
 /* End PBXBuildFile section */
@@ -58,6 +60,9 @@
 		C63CF7AC257F559200A66A3E /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
 		C63CF80D257F57D500A66A3E /* TIFFLib.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TIFFLib.framework; path = "../../../../Library/Developer/Xcode/DerivedData/tiff-ios-gmqwsjppvdzgitfvsvxkvuhqhtrv/Build/Products/Debug/TIFFLib.framework"; sourceTree = "<group>"; };
 		C6521C3724D2D2AE004128B6 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		C6864911262468F800035B75 /* TerrainFunApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TerrainFunApp.swift; sourceTree = "<group>"; };
+		C68649192624693200035B75 /* ProjectWindowContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProjectWindowContentView.swift; sourceTree = "<group>"; };
+		C6864937262579B800035B75 /* ProjectDocument.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProjectDocument.swift; sourceTree = "<group>"; };
 		C6AE5D6624C94F68000EDC78 /* TerrainFun.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TerrainFun.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6AE5D6924C94F68000EDC78 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C6AE5D6B24C94F68000EDC78 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -141,6 +146,9 @@
 		C6AE5D6824C94F68000EDC78 /* TerrainFun */ = {
 			isa = PBXGroup;
 			children = (
+				C6864911262468F800035B75 /* TerrainFunApp.swift */,
+				C6864937262579B800035B75 /* ProjectDocument.swift */,
+				C68649192624693200035B75 /* ProjectWindowContentView.swift */,
 				C6AE5D6924C94F68000EDC78 /* AppDelegate.swift */,
 				C6AE5D6B24C94F68000EDC78 /* ViewController.swift */,
 				C6AE5D6D24C94F68000EDC78 /* Document.swift */,
@@ -281,7 +289,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				C6AE5D7024C94F6A000EDC78 /* Assets.xcassets in Resources */,
-				C6AE5D7324C94F6A000EDC78 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -306,14 +313,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C686492E26247F4400035B75 /* ViewController.swift in Sources */,
 				C6CAB72E24D152C500136F90 /* BinaryReader.swift in Sources */,
+				C6864912262468F800035B75 /* TerrainFunApp.swift in Sources */,
+				C6864938262579B900035B75 /* ProjectDocument.swift in Sources */,
 				C6AE5DEB24C97AE4000EDC78 /* Utils.swift in Sources */,
-				C6AE5D6C24C94F68000EDC78 /* ViewController.swift in Sources */,
-				C6AE5DE924C97A6C000EDC78 /* TerrainEditorScene.swift in Sources */,
-				C6AE5D6A24C94F68000EDC78 /* AppDelegate.swift in Sources */,
-				C6AE5D6E24C94F68000EDC78 /* Document.swift in Sources */,
+				C686491A2624693200035B75 /* ProjectWindowContentView.swift in Sources */,
+				C686493126247F4400035B75 /* SCNViewFR.swift in Sources */,
+				C686493026247F4400035B75 /* TerrainEditorScene.swift in Sources */,
+				C686492F26247F4400035B75 /* Document.swift in Sources */,
+				C686493426247F4B00035B75 /* AppDelegate.swift in Sources */,
 				C6CAB73024D1596800136F90 /* TIFFImage.swift in Sources */,
-				C6AE5DED24C97C51000EDC78 /* SCNViewFR.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -410,7 +420,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 11;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -464,7 +474,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 11;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
@@ -531,7 +541,6 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				PRODUCT_BUNDLE_IDENTIFIER = com.latencyzero.TerrainFunTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -553,7 +562,6 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				PRODUCT_BUNDLE_IDENTIFIER = com.latencyzero.TerrainFunTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;

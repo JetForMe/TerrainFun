@@ -9,6 +9,10 @@
 import XCTest
 @testable import TerrainFun
 
+import CoreImage
+
+
+
 class TerrainFunTests: XCTestCase {
 
     override func setUpWithError() throws {
@@ -28,4 +32,40 @@ class TerrainFunTests: XCTestCase {
 		let ti = try! TIFFImageA(contentsOfURL: url)
 		debugLog("Size: \(ti.ifd!.width), \(ti.ifd!.height)")
     }
+    
+    /**
+    	Can CGImage work on BigTIFF GeoTIFF images?
+    */
+    
+    func
+    testCGImageReadLargeGeoTIFF()
+    {
+		let url = URL(fileURLWithPath: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/USGS_13_n36w112.tif")
+// 		let url = URL(fileURLWithPath: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif")
+		guard
+			let imageSource = CGImageSourceCreateWithURL(url as CFURL, nil),
+			let imageMD = CGImageSourceCopyProperties(imageSource, nil),
+			let metadata = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil),// as? [CFString:Any],
+			let img = CGImageSourceCreateImageAtIndex(imageSource, 0, [:] as CFDictionary)
+		else
+		{
+			debugLog("Couldn't open image at \(url.path)")
+			XCTFail()
+			return
+		}
+		
+		let _ = (imageMD, metadata, img)		//	Silence compiler warnings
+	}
+	
+	func
+	testCIImageProvider()
+	{
+		let url = URL(fileURLWithPath: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif")
+		let ti = try! TIFFImageA(contentsOfURL: url)
+		let ip = BigTIFFImageProvider(tiff: ti)
+		let ci = CIImage(imageProvider: ip, size: Int(ti.ifd!.width), Int(ti.ifd!.height), format: .L16, colorSpace: nil, options: [.providerTileSize : [ 128, 128 ]])
+		let image = ci.cgImage
+		XCTAssertNotNil(image, "")
+	}
 }
+
