@@ -1,9 +1,9 @@
 //
-//  TIFFImage.swift
-//  TerrainFun
+//	TIFFImage.swift
+//	TerrainFun
 //
-//  Created by Rick Mann on 2020-07-29.
-//  Copyright © 2020 Latency: Zero, LLC. All rights reserved.
+//	Created by Rick Mann on 2020-07-29.
+//	Copyright © 2020 Latency: Zero, LLC. All rights reserved.
 //
 
 import Foundation
@@ -629,7 +629,7 @@ TIFFImageA
 		let		key			:	GeoKey
 		let		tagLoc		:	Tag
 		let		count		:	UInt16
-		let		valueOffset	:	UInt16
+		let		valueOffset :	UInt16
 	}
 	
 	enum
@@ -778,8 +778,8 @@ TIFFImageA
 				case 6:		return .jpegOld
 				case 7:		return .jpegNew
 				case 8:		return .deflate
-				case 32946:	return .pkzipDeflate
-				case 32772:	return .packBits
+				case 32946: return .pkzipDeflate
+				case 32772: return .packBits
 				default:
 					throw Error.invalidCompression
 			}
@@ -1065,11 +1065,11 @@ BigTIFFImageProvider : CIImageProvider
 	}
 	
 	@objc
-    func
-    provideImageData(_ ioData: UnsafeMutableRawPointer,
-    					bytesPerRow inRowbytes: Int,
-    					origin inX: Int,
-    							_ inY: Int,
+	func
+	provideImageData(_ ioData: UnsafeMutableRawPointer,
+						bytesPerRow inRowbytes: Int,
+						origin inX: Int,
+								_ inY: Int,
 						size inWidth: Int,
 							_ inHeight: Int,
 						userInfo inInfo: Any?)
@@ -1116,11 +1116,11 @@ CIImageProvider
 	*/
 	
 	@objc
-    func
-    provideImageData(_ ioData: UnsafeMutableRawPointer,
-    					bytesPerRow inRowbytes: Int,
-    					origin inX: Int,
-    							_ inY: Int,
+	func
+	provideImageData(_ ioData: UnsafeMutableRawPointer,
+						bytesPerRow inRowbytes: Int,
+						origin inX: Int,
+								_ inY: Int,
 						size inWidth: Int,
 							_ inHeight: Int,
 						userInfo inInfo: Any?)
