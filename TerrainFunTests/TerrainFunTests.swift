@@ -64,7 +64,8 @@ class TerrainFunTests: XCTestCase {
 		let ti = try! TIFFImageA(contentsOfURL: url)
 		let ip = BigTIFFImageProvider(tiff: ti)
 		let ci = CIImage(imageProvider: ip, size: Int(ti.ifd!.width), Int(ti.ifd!.height), format: .L16, colorSpace: nil, options: [.providerTileSize : [ 128, 128 ]])
-		let image = ci.cgImage
+		let ctx = CIContext()
+		let image = ctx.createCGImage(ci, from: CGRect(x: 10.0, y: 10.0, width: 256.0, height: 256.0))
 		XCTAssertNotNil(image, "")
 	}
 }

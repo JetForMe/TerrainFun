@@ -27,6 +27,7 @@ ProjectWindowContentView: View
 				Text("Contour")
 				Text("3D Mesh")
 			}
+			.frame(idealWidth:200)
 			Image("document-error")
 				.resizable()
 				.aspectRatio(contentMode: .fit)
