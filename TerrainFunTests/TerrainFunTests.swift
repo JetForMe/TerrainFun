@@ -12,8 +12,13 @@ import XCTest
 import CoreImage
 
 
+/**
+	Example BigTIFF: https://astrogeology.usgs.gov/search/map/Mars/Topography/HRSC_MOLA_Blend/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2
+*/
 
-class TerrainFunTests: XCTestCase {
+class
+TerrainFunTests: XCTestCase
+{
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -60,12 +65,13 @@ class TerrainFunTests: XCTestCase {
 	func
 	testCIImageProvider()
 	{
-		let url = URL(fileURLWithPath: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif")
+//		let url = URL(fileURLWithPath: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif")		//	106,694 x 53,347
+		let url = URL(fileURLWithPath: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/Mars_HRSC_MOLA_BlendDEM_Global_200mp_1024.tif")	//	  1,024 x    512
 		let ti = try! TIFFImageA(contentsOfURL: url)
 		let ip = BigTIFFImageProvider(tiff: ti)
 		let ci = CIImage(imageProvider: ip, size: Int(ti.ifd!.width), Int(ti.ifd!.height), format: .L16, colorSpace: nil, options: [.providerTileSize : [ 128, 128 ]])
 		let ctx = CIContext()
-		let image = ctx.createCGImage(ci, from: CGRect(x: 10.0, y: 10.0, width: 256.0, height: 256.0))
+		let image = ctx.createCGImage(ci, from: CGRect(x: 0, y: 0, width: 256.0, height: 256.0))
 		XCTAssertNotNil(image, "")
 	}
 }

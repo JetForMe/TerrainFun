@@ -86,10 +86,10 @@ TIFFImageA
 		
 		//	The entry count is 16 bit for TIFF v42, 64-bit for v43 (BigTIFF)…
 		
-		let entryCount: UInt64 = readOffset()
+		let entryCount: UInt64 = readEntryCount()
 		
 		var ifd = IFD()
-		for _ in 0..<entryCount
+		for _ in 0 ..< entryCount
 		{
 			let de = readDirectoryEntry()
 			if case .unknown = de.tag
@@ -295,8 +295,49 @@ TIFFImageA
 		switch (self.formatVersion)
 		{
 			case .v42:
-				let offset32: UInt32 = self.reader.get()
-				offset = UInt64(offset32)
+				let v42Offset: UInt32 = self.reader.get()
+				offset = UInt64(v42Offset)
+			
+			case .v43:
+				offset = self.reader.get()
+		}
+		
+		return offset
+	}
+	
+	/**
+	*/
+	
+	mutating
+	func
+	readEntryCount()
+		-> UInt64
+	{
+		let offset: UInt64
+		switch (self.formatVersion)
+		{
+			case .v42:
+				let v42Count: UInt16 = self.reader.get()
+				offset = UInt64(v42Count)
+			
+			case .v43:
+				offset = self.reader.get()
+		}
+		
+		return offset
+	}
+	
+	mutating
+	func
+	readTagCount()
+		-> UInt64
+	{
+		let offset: UInt64
+		switch (self.formatVersion)
+		{
+			case .v42:
+				let v42Count: UInt32 = self.reader.get()
+				offset = UInt64(v42Count)
 			
 			case .v43:
 				offset = self.reader.get()
@@ -391,8 +432,15 @@ TIFFImageA
 		let de = DirectoryEntry(location: UInt64(loc),
 								tag: tag,
 								type: TagType(rawValue: self.reader.get()) ?? .undefined,
-								count: readOffset(),
+								count: readTagCount(),
 								offset: readOffset())
+		//	TODO: In big endian, this offset read fails for some types.
+		//		If there's a count of 1 short value, the two bytes that make up
+		//		that value are the first two bytes of the offset field. We need
+		//		to check that the values fit in the field, read them if they do,
+		//		store them in an optional array in the DirectoryEntry, *OR* store
+		//		the offset.
+		
 		return de
 	}
 	
