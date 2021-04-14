@@ -15,6 +15,14 @@ import Foundation
 				https://www.awaresystems.be/imaging/tiff/bigtiff.html
 				http://www.simplesystems.org/libtiff//bigtiffdesign.html
 	GeoTIFF:	http://geotiff.maptools.org/spec/contents.html
+	
+	Known Bugs:
+		• I’ve played fast and loose with Int-vs-UInt64 and subscripts. While it’s
+			unlikely that on 64-bit systems any real data will exceed Int.maxValue,
+			there are places where this code ignores those distinctions that will
+			likely fail.
+		
+	
 */
 
 struct
@@ -30,6 +38,7 @@ TIFFImageA
 		case invalidModelType
 		case invalidRasterType
 		case tagTypeConversionError					//	Attempted to read a tag value of incompatible type
+		case noImage
 	}
 	
 	enum FormatVersion : UInt16
@@ -72,7 +81,6 @@ TIFFImageA
 			{
 				throw Error.invalidTIFFFormat
 			}
-			
 		}
 		else
 		{
@@ -124,6 +132,7 @@ TIFFImageA
 					ifd.blackIsZero = values.first! != 0
 					
 				case .stripOffsets:
+					//	TODO: If there's a single strip offset, it's probably stored in the offset. Same is true for byte counts, etc.
 					let offset = try de.validateOffset()
 					try self.reader.at(offset: offset)
 					{
@@ -699,6 +708,32 @@ TIFFImageA
 	}
 	
 	/**
+		Read a row of pixel data.
+	*/
+	
+	func
+	read(row inY: UInt64, startX inStartX: UInt64, width inWidth: UInt64)
+		throws
+		-> Data
+	{
+		guard let ifd = self.ifd else { throw Error.noImage }
+		
+		let stripIndex = inY / UInt64(ifd.rowsPerStrip)
+		let stripOffset = ifd.stripOffsets[Int(stripIndex)]
+		//	TODO: validate coordinates in strip (especially last strip)
+//		let stripByteCount = ifd.stripByteCounts[Int(stripIndex)]
+		let rowInStrip = inY % UInt64(ifd.rowsPerStrip)
+		let rowBytes = ifd.width * 2
+		
+		let bytesPerPixel = UInt64(ifd.samplesPerPixel * ifd.bitsPerSample / 8)
+		let startIndex = stripOffset + rowInStrip * UInt64(rowBytes) + inStartX * bytesPerPixel
+		let endIndex = startIndex + inWidth * bytesPerPixel
+		
+		let data = self.reader.data[startIndex ..< endIndex]
+		return data
+	}
+	
+	/**
 		IFD: Image File Directory
 		
 		One or more per file. Contains the parsed data from the TIFF IFD.
@@ -715,6 +750,10 @@ TIFFImageA
 		var		stripByteCounts			:	[UInt64]					=	[UInt64]()
 		var		stripOffsets			:	[UInt64]					=	[UInt64]()
 		var		stripShortData			:	[[UInt16]?]?
+		
+		var		stripCount				:	UInt64						{ get { return UInt64((self.height + 1) / self.rowsPerStrip) } }
+																		//	Adding one to the height ensures that with integer division,
+																		//	the result includes any final partial strip.
 		
 		var		bitsPerSample			:	UInt16						=	0
 		var		samplesPerPixel			:	UInt16						=	0
@@ -1400,7 +1439,13 @@ BigTIFFImageProvider : CIImageProvider
 {
 	init(tiff inTiffImage: TIFFImageA)
 	{
+		self.tiffImage = inTiffImage
 	}
+	
+	/**
+		Moves the BinaryReader index.
+		
+	*/
 	
 	@objc
 	func
@@ -1413,7 +1458,52 @@ BigTIFFImageProvider : CIImageProvider
 						userInfo inInfo: Any?)
 	{
 		debugLog("provideImageData(bytesPerRow: \(inRowbytes); origin: \(inX), \(inY); size: \(inWidth), \(inHeight)")
+		let startTime = CFAbsoluteTimeGetCurrent()
+		defer
+		{
+			let endTime = CFAbsoluteTimeGetCurrent()
+			let delta = endTime - startTime
+			debugLog("  took time: \(delta)")
+		}
+		
+		do
+		{
+			let destinationByteCount = inHeight * inRowbytes
+			let dest = UnsafeMutableRawBufferPointer(start: ioData, count: destinationByteCount)
+			
+			let originX = UInt64(inX)
+			let originY = UInt64(inY)
+			let width = UInt64(inWidth)
+			
+			//	Find the first strip needed…
+			
+			guard let ifd = self.tiffImage.ifd else { return }
+			let bytesPerPixel = ifd.samplesPerPixel * ifd.bitsPerSample / 8
+			for row in 0 ..< UInt64(inHeight)
+			{
+				let y = originY + row
+//				let stripIndex = y / UInt64(ifd.rowsPerStrip)
+//				let stripOffset = ifd.stripOffsets[Int(stripIndex)]
+				
+				let data = try self.tiffImage.read(row: y, startX: originX, width: width)
+				
+				//	Make a new UMRBP to point to the desired slice of the destination…
+				//	TODO: Handle endianness differences!!
+				
+				let bpStart = Int(row * UInt64(inRowbytes))
+				let bpEnd = bpStart + inWidth * Int(bytesPerPixel)
+				let destSlice = UnsafeMutableRawBufferPointer(rebasing: dest[bpStart..<bpEnd])
+				destSlice.copyBytes(from: data)
+			}
+		}
+		
+		catch (let e)
+		{
+			debugLog("Error reading image data \(e)")
+		}
 	}
+	
+	let			tiffImage			:	TIFFImageA
 }
 
 /**
