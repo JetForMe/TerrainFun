@@ -62,7 +62,7 @@ TIFFImageA
 	{
 		let endian: UInt16 = self.reader.get()				//	Bytes 0-1 (endian)
 		self.reader.bigEndian = endian == 0x4d4d
-		let formatVersion: UInt16 = reader.get()			//	Bytes 2-3 (format version)
+		let formatVersion: UInt16 = self.reader.get()			//	Bytes 2-3 (format version)
 		if formatVersion == 42
 		{
 			self.formatVersion = .v42

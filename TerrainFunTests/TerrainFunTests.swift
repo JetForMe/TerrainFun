@@ -96,6 +96,62 @@ TerrainFunTests: XCTestCase
 		let destURL = URL(fileURLWithPath: "/Users/rmann/Downloads/TestImage.png")
 		writeCGImage(image!, to: destURL)
 	}
+	
+	func
+	testBinaryFileReaderLE()
+	{
+		do
+		{
+			let url = URL(fileURLWithPath: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif")		//	106,694 x 53,347
+			let reader = try BinaryFileReader(url: url)
+			XCTAssertEqual(reader.length, 11384463908)
+			
+			let endian: UInt16 = try reader.get()				//	Bytes 0-1 (endian)
+			XCTAssertEqual(endian, 0x4949)
+			reader.bigEndian = false
+			let formatVersion: UInt16 = try reader.get()			//	Bytes 2-3 (format version)
+			XCTAssertEqual(formatVersion, 43)
+			
+			try reader.seek(to: 0)
+			var a = [UInt16](repeating: 0, count: 2)
+			try reader.getArray(&a)
+			XCTAssertEqual(a[0], 0x4949)
+			XCTAssertEqual(a[1], 43)
+		}
+		
+		catch (let e)
+		{
+			XCTFail("Error testing binary file reader: \(e)")
+		}
+	}
+	
+	func
+	testBinaryFileReaderBE()
+	{
+		do
+		{
+			let url = URL(fileURLWithPath: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/Mars_HRSC_MOLA_BlendDEM_Global_200mp_1024.tif")	//	  1,024 x    512
+			let reader = try BinaryFileReader(url: url)
+			XCTAssertEqual(reader.length, 529022)
+			
+			let endian: UInt16 = try reader.get()				//	Bytes 0-1 (endian)
+			XCTAssertEqual(endian, 0x4d4d)
+			reader.bigEndian = true
+			let formatVersion: UInt16 = try reader.get()			//	Bytes 2-3 (format version)
+			XCTAssertEqual(formatVersion, 42)
+			
+			try reader.seek(to: 0)
+			var a = [UInt16](repeating: 0, count: 2)
+			try reader.getArray(&a)
+			XCTAssertEqual(a[0], 0x4d4d)
+			XCTAssertEqual(a[1], 42)
+		}
+		
+		catch (let e)
+		{
+			XCTFail("Error testing binary file reader: \(e)")
+		}
+	}
 }
 
 
