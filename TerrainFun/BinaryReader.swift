@@ -20,9 +20,26 @@ BinaryReader
 	}
 	
 //	mutating
+	func
+	get<T>()
+		-> T where T : FixedWidthInteger
+	{
+		let size = MemoryLayout<T>.stride
+		let v: T = self.data.subdata(in: self.idx..<self.idx + size).withUnsafeBytes { $0.load(as: T.self) }
+		self.idx += size
+		if self.bigEndian
+		{
+			return T(bigEndian: v)
+		}
+		else
+		{
+			return T(littleEndian: v)
+		}
+	}
+	
 //	func
 //	get<T>()
-//		-> T where T : FixedWidthInteger
+//		-> T where T : BinaryFloatingPoint
 //	{
 //		let size = MemoryLayout<T>.stride
 //		let v: T = self.data.subdata(in: self.idx..<self.idx + size).withUnsafeBytes { $0.load(as: T.self) }
@@ -45,71 +62,111 @@ BinaryReader
 //		get()
 //	}
 	
-	@inlinable
-	//mutating
-	func
-	get()
-		-> UInt64
-	{
-		let v: UInt64
-		if self.bigEndian
-		{
-			let hi: UInt32 = self.get()
-			let lo: UInt32 = self.get()
-			v = UInt64(hi) << 32 | UInt64(lo)
-		}
-		else
-		{
-			let lo: UInt32 = self.get()
-			let hi: UInt32 = self.get()
-			v = UInt64(hi) << 32 | UInt64(lo)
-		}
-		return v
-	}
+//	@inlinable
+//	//mutating
+//	func
+//	get()
+//		-> UInt64
+//	{
+//		let v: UInt64
+//		if self.bigEndian
+//		{
+//			let hi: UInt32 = self.get()
+//			let lo: UInt32 = self.get()
+//			v = UInt64(hi) << 32 | UInt64(lo)
+//		}
+//		else
+//		{
+//			let lo: UInt32 = self.get()
+//			let hi: UInt32 = self.get()
+//			v = UInt64(hi) << 32 | UInt64(lo)
+//		}
+//		return v
+//	}
+//	
+//	@inlinable
+//	//mutating
+//	func
+//	get()
+//		-> UInt32
+//	{
+//		let v: UInt32
+//		if self.bigEndian
+//		{
+//			v = UInt32(self.data[self.idx]) << 24
+//				| UInt32(self.data[self.idx + 1]) << 16
+//				| UInt32(self.data[self.idx + 2]) << 8
+//				| UInt32(self.data[self.idx + 3])
+//		}
+//		else
+//		{
+//			v = UInt32(self.data[self.idx]) << 0
+//				| UInt32(self.data[self.idx + 1]) << 8
+//				| UInt32(self.data[self.idx + 2]) << 16
+//				| UInt32(self.data[self.idx + 3]) << 24
+//		}
+//		self.idx += 4
+//		return v
+//	}
+//	
+//	@inlinable
+//	//mutating
+//	func
+//	get()
+//		-> UInt16
+//	{
+//		let v: UInt16
+//		if self.bigEndian
+//		{
+//			v = UInt16(self.data[self.idx]) << 8
+//				| UInt16(self.data[self.idx + 1])
+//		}
+//		else
+//		{
+//			v = UInt16(self.data[self.idx]) << 0
+//				| UInt16(self.data[self.idx + 1]) << 8
+//		}
+//		self.idx += 2
+//		return v
+//	}
+//	
+//	@inlinable
+//	//mutating
+//	func
+//	get()
+//		-> UInt8
+//	{
+//		let v = UInt8(self.data[idx])
+//		self.idx += 1
+//		return v
+//	}
 	
 	@inlinable
 	//mutating
 	func
 	get()
-		-> UInt32
+		-> Float
 	{
-		let v: UInt32
+		let v: Float
 		if self.bigEndian
 		{
-			v = UInt32(self.data[self.idx]) << 24
-				| UInt32(self.data[self.idx + 1]) << 16
-				| UInt32(self.data[self.idx + 2]) << 8
-				| UInt32(self.data[self.idx + 3])
+			let iv = UInt32(self.data[self.idx + 4]) << 24
+					| UInt32(self.data[self.idx + 5]) << 16
+					| UInt32(self.data[self.idx + 6]) << 8
+					| UInt32(self.data[self.idx + 7]) << 0
+			
+			v = Float(bitPattern: iv)
 		}
 		else
 		{
-			v = UInt32(self.data[self.idx]) << 0
-				| UInt32(self.data[self.idx + 1]) << 8
-				| UInt32(self.data[self.idx + 2]) << 16
-				| UInt32(self.data[self.idx + 3]) << 24
+			let iv = UInt32(self.data[self.idx + 4]) << 32
+					| UInt32(self.data[self.idx + 5]) << 40
+					| UInt32(self.data[self.idx + 6]) << 48
+					| UInt32(self.data[self.idx + 7]) << 56
+			
+			v = Float(bitPattern: iv)
 		}
 		self.idx += 4
-		return v
-	}
-	
-	@inlinable
-	//mutating
-	func
-	get()
-		-> UInt16
-	{
-		let v: UInt16
-		if self.bigEndian
-		{
-			v = UInt16(self.data[self.idx]) << 8
-				| UInt16(self.data[self.idx + 1])
-		}
-		else
-		{
-			v = UInt16(self.data[self.idx]) << 0
-				| UInt16(self.data[self.idx + 1]) << 8
-		}
-		self.idx += 2
 		return v
 	}
 	
