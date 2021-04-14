@@ -1185,7 +1185,7 @@ TIFFImageA
 	}
 	
 	struct
-	TagType : Equatable
+	TagType : Equatable, CustomStringConvertible
 	{
 		static func == (lhs: TIFFImageA.TagType, rhs: TIFFImageA.TagType) -> Bool {
 			return lhs.rawValue == rhs.rawValue
@@ -1194,29 +1194,30 @@ TIFFImageA
 		let			rawValue		:	UInt16
 		let			size			:	UInt8				//	Size in file, not Swift type size
 		let			type			:	Any.Type
+		let			description			:	String
 		
-		static let	byte			=	TagType(rawValue: 1, size: 1, type: UInt8.self)
-		static let	ascii			=	TagType(rawValue: 2, size: 1, type: UInt8.self)
-		static let	short			=	TagType(rawValue: 3, size: 2, type: UInt16.self)
-		static let	long			=	TagType(rawValue: 4, size: 4, type: UInt32.self)
-		static let	rational		=	TagType(rawValue: 5, size: 8, type: Rational.self)
+		static let	byte			=	TagType(rawValue: 1, size: 1, type: UInt8.self, description: "byte")
+		static let	ascii			=	TagType(rawValue: 2, size: 1, type: UInt8.self, description: "ascii")
+		static let	short			=	TagType(rawValue: 3, size: 2, type: UInt16.self, description: "short")
+		static let	long			=	TagType(rawValue: 4, size: 4, type: UInt32.self, description: "long")
+		static let	rational		=	TagType(rawValue: 5, size: 8, type: Rational.self, description: "rational")
 
-		static let	sbyte			=	TagType(rawValue: 6, size: 1, type: Int8.self)
-		static let	undefined		=	TagType(rawValue: 7, size: 1, type: UInt8.self)
-		static let	sshort			=	TagType(rawValue: 8, size: 2, type: Int16.self)
-		static let	slong			=	TagType(rawValue: 9, size: 4, type: Int32.self)
-		static let	srational		=	TagType(rawValue: 10, size: 8, type: SRational.self)
+		static let	sbyte			=	TagType(rawValue: 6, size: 1, type: Int8.self, description: "sbyte")
+		static let	undefined		=	TagType(rawValue: 7, size: 1, type: UInt8.self, description: "undefined")
+		static let	sshort			=	TagType(rawValue: 8, size: 2, type: Int16.self, description: "sshort")
+		static let	slong			=	TagType(rawValue: 9, size: 4, type: Int32.self, description: "slong")
+		static let	srational		=	TagType(rawValue: 10, size: 8, type: SRational.self, description: "srational")
 
-		static let	float			=	TagType(rawValue: 11, size: 4, type: Float.self)
-		static let	double			=	TagType(rawValue: 12, size: 8, type: Double.self)
+		static let	float			=	TagType(rawValue: 11, size: 4, type: Float.self, description: "float")
+		static let	double			=	TagType(rawValue: 12, size: 8, type: Double.self, description: "double")
 		
-		static let	ifd				=	TagType(rawValue: 13, size: 12, type: IFD.self)
+		static let	ifd				=	TagType(rawValue: 13, size: 12, type: IFD.self, description: "ifd")
 		
 		//	BigTIFF Types
 		
-		static let	long8			=	TagType(rawValue: 16, size: 8, type: Int64.self)
-		static let	slong8			=	TagType(rawValue: 17, size: 8, type: UInt64.self)
-		static let	ifd8			=	TagType(rawValue: 18, size: 20, type: IFD.self)
+		static let	long8			=	TagType(rawValue: 16, size: 8, type: Int64.self, description: "long8")
+		static let	slong8			=	TagType(rawValue: 17, size: 8, type: UInt64.self, description: "slong8")
+		static let	ifd8			=	TagType(rawValue: 18, size: 20, type: IFD.self, description: "ifd8")
 		
 		static
 		func
@@ -1246,7 +1247,7 @@ TIFFImageA
 				case Self.ifd8.rawValue: return .ifd8
 
 				default:
-					return TagType(rawValue: inValue, size: 1, type: Void.self)
+					return TagType(rawValue: inValue, size: 1, type: Void.self, description: "Uknown(\(inValue))")
 			}
 		}
 	}
