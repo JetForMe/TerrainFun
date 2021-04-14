@@ -1457,13 +1457,14 @@ BigTIFFImageProvider : CIImageProvider
 							_ inHeight: Int,
 						userInfo inInfo: Any?)
 	{
-		debugLog("provideImageData(bytesPerRow: \(inRowbytes); origin: \(inX), \(inY); size: \(inWidth), \(inHeight)")
 		let startTime = CFAbsoluteTimeGetCurrent()
+		debugLog("provideImageData(bytesPerRow: \(inRowbytes); origin: \(inX), \(inY); size: \(inWidth), \(inHeight) @ \(startTime)")
+		
 		defer
 		{
 			let endTime = CFAbsoluteTimeGetCurrent()
 			let delta = endTime - startTime
-			debugLog("  took time: \(delta)")
+			debugLog("  took time: \(delta) @ \(endTime)")
 		}
 		
 		do

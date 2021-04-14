@@ -77,7 +77,7 @@ TerrainFunTests: XCTestCase
 							size: Int(ti.ifd!.width), Int(ti.ifd!.height),
 							format: .L16,
 							colorSpace: nil,
-							options: [.providerTileSize : [ 4096, 4096 ]])
+							options: [.providerTileSize : [ 16384, 16384 ]])
 		
 		let scaleFilter = CIFilter(name: "CILanczosScaleTransform")!
 		scaleFilter.setValue(ci, forKey: kCIInputImageKey)
