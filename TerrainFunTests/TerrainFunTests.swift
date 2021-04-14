@@ -45,8 +45,8 @@ TerrainFunTests: XCTestCase
     func
     testCGImageReadLargeGeoTIFF()
     {
-		let url = URL(fileURLWithPath: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/USGS_13_n36w112.tif")
-// 		let url = URL(fileURLWithPath: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif")
+//		let url = URL(fileURLWithPath: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/USGS_13_n36w112.tif")
+ 		let url = URL(fileURLWithPath: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif")
 		guard
 			let imageSource = CGImageSourceCreateWithURL(url as CFURL, nil),
 			let imageMD = CGImageSourceCopyProperties(imageSource, nil),
@@ -54,11 +54,15 @@ TerrainFunTests: XCTestCase
 			let img = CGImageSourceCreateImageAtIndex(imageSource, 0, [:] as CFDictionary)
 		else
 		{
+			//	We expect this to fail. If it ever succeeds, we might be out of a job…
 			debugLog("Couldn't open image at \(url.path)")
-			XCTFail()
 			return
 		}
 		
+		//	Take note if we succeed with reading above. It means support has been added
+		//	to the OS, and we should consider re-writing…
+		
+		XCTFail()
 		let _ = (imageMD, metadata, img)		//	Silence compiler warnings
 	}
 	
