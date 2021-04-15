@@ -10,7 +10,7 @@ import XCTest
 @testable import TerrainFun
 
 import CoreImage
-
+import System
 
 /**
 	Example BigTIFF: https://astrogeology.usgs.gov/search/map/Mars/Topography/HRSC_MOLA_Blend/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2
@@ -27,7 +27,22 @@ TerrainFunTests: XCTestCase
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
-
+	
+	func
+	testFullLoadTime()
+		throws
+	{
+		let url = URL(fileURLWithPath: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif")
+		let fp = FilePath(url)!
+		let fd = try FileDescriptor.open(fp, .readOnly)	//	TODO: How do I close this?
+		let length = 4//1 * 1 * 1024 * 1024//Int(try fd.seek(offset: 0, from: .end))
+		let buf = UnsafeMutableRawBufferPointer.allocate(byteCount: length, alignment: MemoryLayout<UInt8>.alignment)
+		defer { buf.deallocate() }
+//		buf.initializeMemory(as: UInt8.self, repeating: 0)
+		let readCount = try fd.read(fromAbsoluteOffset: 0, into: buf)
+		XCTAssertEqual(readCount, length)
+	}
+	
     func
     testReadTIFF()
     	throws
@@ -114,7 +129,7 @@ TerrainFunTests: XCTestCase
 			
 			try reader.seek(to: 0)
 			var a = [UInt16](repeating: 0, count: 2)
-			try reader.getArray(&a)
+			try reader.get(&a)
 			XCTAssertEqual(a[0], 0x4949)
 			XCTAssertEqual(a[1], 43)
 		}
@@ -142,7 +157,7 @@ TerrainFunTests: XCTestCase
 			
 			try reader.seek(to: 0)
 			var a = [UInt16](repeating: 0, count: 2)
-			try reader.getArray(&a)
+			try reader.get(&a)
 			XCTAssertEqual(a[0], 0x4d4d)
 			XCTAssertEqual(a[1], 42)
 		}

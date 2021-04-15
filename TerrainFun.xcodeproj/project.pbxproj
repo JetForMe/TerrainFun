@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C63CF80E257F57D500A66A3E /* TIFFLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C63CF80D257F57D500A66A3E /* TIFFLib.framework */; };
-		C63CF80F257F57D500A66A3E /* TIFFLib.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C63CF80D257F57D500A66A3E /* TIFFLib.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C6864912262468F800035B75 /* TerrainFunApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6864911262468F800035B75 /* TerrainFunApp.swift */; };
 		C686491A2624693200035B75 /* ProjectWindowContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C68649192624693200035B75 /* ProjectWindowContentView.swift */; };
 		C686492E26247F4400035B75 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5D6B24C94F68000EDC78 /* ViewController.swift */; };
@@ -43,23 +41,8 @@
 		};
 /* End PBXContainerItemProxy section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		C63CF810257F57D500A66A3E /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				C63CF80F257F57D500A66A3E /* TIFFLib.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
 		C63CF7AC257F559200A66A3E /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
-		C63CF80D257F57D500A66A3E /* TIFFLib.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TIFFLib.framework; path = "../../../../Library/Developer/Xcode/DerivedData/tiff-ios-gmqwsjppvdzgitfvsvxkvuhqhtrv/Build/Products/Debug/TIFFLib.framework"; sourceTree = "<group>"; };
 		C6521C3724D2D2AE004128B6 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		C6864911262468F800035B75 /* TerrainFunApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TerrainFunApp.swift; sourceTree = "<group>"; };
 		C68649192624693200035B75 /* ProjectWindowContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProjectWindowContentView.swift; sourceTree = "<group>"; };
@@ -92,7 +75,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C63CF80E257F57D500A66A3E /* TIFFLib.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -116,7 +98,6 @@
 		C63CF7A3257F54FA00A66A3E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				C63CF80D257F57D500A66A3E /* TIFFLib.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -196,7 +177,6 @@
 				C6AE5D6224C94F68000EDC78 /* Sources */,
 				C6AE5D6324C94F68000EDC78 /* Frameworks */,
 				C6AE5D6424C94F68000EDC78 /* Resources */,
-				C63CF810257F57D500A66A3E /* Embed Frameworks */,
 			);
 			buildRules = (
 			);

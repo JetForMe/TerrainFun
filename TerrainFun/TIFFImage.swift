@@ -17,7 +17,7 @@ import Foundation
 	GeoTIFF:	http://geotiff.maptools.org/spec/contents.html
 	
 	Known Bugs:
-		• I’ve played fast and loose with Int-vs-UInt64 and subscripts. While it’s
+		• I’ve played fast and loose with Int-vs-Int64 and subscripts. While it’s
 			unlikely that on 64-bit systems any real data will exceed Int.maxValue,
 			there are places where this code ignores those distinctions that will
 			likely fail.
@@ -50,8 +50,7 @@ TIFFImageA
 	init(contentsOfURL inURL: URL)
 		throws
 	{
-		let data = try Data(contentsOf: inURL, options: .alwaysMapped)
-		self.reader = BinaryReader(data: data)
+		self.reader = try BinaryFileReader(url: inURL)
 		try readHeader()
 	}
 	
@@ -60,9 +59,9 @@ TIFFImageA
 	readHeader()
 		throws
 	{
-		let endian: UInt16 = self.reader.get()				//	Bytes 0-1 (endian)
+		let endian: UInt16 = try self.reader.get()				//	Bytes 0-1 (endian)
 		self.reader.bigEndian = endian == 0x4d4d
-		let formatVersion: UInt16 = self.reader.get()			//	Bytes 2-3 (format version)
+		let formatVersion: UInt16 = try self.reader.get()			//	Bytes 2-3 (format version)
 		if formatVersion == 42
 		{
 			self.formatVersion = .v42
@@ -70,13 +69,13 @@ TIFFImageA
 		else if formatVersion == 43
 		{
 			self.formatVersion = .v43
-			let offsetByteSize: UInt16 = self.reader.get()	//	Bytes 4-5, offset size, currently only size==8 supported
+			let offsetByteSize: UInt16 = try self.reader.get()	//	Bytes 4-5, offset size, currently only size==8 supported
 			if offsetByteSize != 8
 			{
 				throw Error.invalidOffsetSize(Int(offsetByteSize))
 			}
 			self.offsetSize = Int(offsetByteSize)
-			let padding: UInt16 = self.reader.get()			//	Bytes 6-7, should be zero
+			let padding: UInt16 = try self.reader.get()			//	Bytes 6-7, should be zero
 			if padding != 0
 			{
 				throw Error.invalidTIFFFormat
@@ -89,14 +88,11 @@ TIFFImageA
 		
 		//	Get the offset to the first IFD and jump to it…
 		
-		let offset = readOffset()
-		self.reader.seek(to: offset)
-		
-		//	The entry count is 16 bit for TIFF v42, 64-bit for v43 (BigTIFF)…
-		
-		let entryCount: UInt64 = readEntryCount()
+		let offset = try readOffset()
+		try self.reader.seek(to: offset)
 		
 		var ifd = IFD()
+		let entryCount = try readEntryCount()
 		for _ in 0 ..< entryCount
 		{
 			let de = try readDirectoryEntry()
@@ -112,23 +108,23 @@ TIFFImageA
 			switch (de.tag)
 			{
 				case .imageWidth:
-					let values = try de.validateUInt(count: 1)
-					ifd.width =  UInt32(values.first!)
+					let values = try de.validateInt(count: 1)
+					ifd.width =  UInt32(values.first!)		//	TODO: Are we sure we can't exceed UInt32? we should still do Int64, no?
 				
 				case .imageLength:
-					let values = try de.validateUInt(count: 1)
+					let values = try de.validateInt(count: 1)
 					ifd.height = UInt32(values.first!)
 				
 				case .bitsPerSample:
-					let values = try de.validateUInt(count: 1)
+					let values = try de.validateInt(count: 1)
 					ifd.bitsPerSample = UInt16(values.first!)
 					
 				case .compression:
-					let values = try de.validateUInt(count: 1)
+					let values = try de.validateInt(count: 1)
 					ifd.compression = try CompressionType.from(rawValue: UInt16(values.first!))
 				
 				case .photometricInterpretation:
-					let values = try de.validateUInt(count: 1)
+					let values = try de.validateInt(count: 1)
 					ifd.blackIsZero = values.first! != 0
 					
 				case .stripOffsets:
@@ -154,14 +150,14 @@ TIFFImageA
 					}
 				
 				case .xResolution:
-					let res: Rational = self.reader.get()
+					let res: Rational = try self.reader.get()
 					debugLog("xres: \(res)")
 				
 				case .planarConfiguration:
 					ifd.planarConfiguration = try de.validateUInt16()
 				
 				case .predictor:
-					let values = try de.validateUInt(count: 1)
+					let values = try de.validateInt(count: 1)
 					ifd.predictor = try Predictor.from(rawValue: UInt16(values.first!))
 					
 				case .tileWidth:
@@ -185,7 +181,7 @@ TIFFImageA
 					}
 					
 				case .sampleFormat:
-					ifd.sampleFormat = try de.validateUInt16()
+					ifd.sampleFormat = SampleFormat.from(rawValue: try de.validateUInt16())
 				
 				case .modelPixelScale:
 					let offset = try de.validateOffset()
@@ -193,9 +189,9 @@ TIFFImageA
 					{
 						//	Read three doubles…
 						
-						ifd.scaleX = self.reader.get()
-						ifd.scaleY = self.reader.get()
-						ifd.scaleZ = self.reader.get()
+						ifd.scaleX = try self.reader.get()
+						ifd.scaleY = try self.reader.get()
+						ifd.scaleZ = try self.reader.get()
 					}
 				
 				case .modelTiePoint:
@@ -207,12 +203,12 @@ TIFFImageA
 						let tiePointCount = de.count / 6
 						for _ in 0..<tiePointCount
 						{
-							let mtp = ModelTiePoint(i: self.reader.get(),
-													j: self.reader.get(),
-													k: self.reader.get(),
-													x: self.reader.get(),
-													y: self.reader.get(),
-													z: self.reader.get())
+							let mtp = ModelTiePoint(i: try self.reader.get(),
+													j: try self.reader.get(),
+													k: try self.reader.get(),
+													x: try self.reader.get(),
+													y: try self.reader.get(),
+													z: try self.reader.get())
 							ifd.modelTiePoints.append(mtp)
 							debugLog("Model Tie Point: \(mtp)")
 						}
@@ -238,7 +234,7 @@ TIFFImageA
 					{
 						//	Read the header information…
 						
-						let keyDirectoryVersion: UInt16 = self.reader.get()
+						let keyDirectoryVersion: UInt16 = try self.reader.get()
 						if keyDirectoryVersion != 1
 						{
 							//	TODO: Better to throw an exception here?
@@ -246,11 +242,11 @@ TIFFImageA
 							return
 						}
 						
-						let keyRevision: UInt16 = self.reader.get()
-						let minorVersion: UInt16 = self.reader.get()
+						let keyRevision: UInt16 = try self.reader.get()
+						let minorVersion: UInt16 = try self.reader.get()
 						debugLog("Key revision: \(keyRevision).\(minorVersion)")
 						
-						let keyCount: UInt16 = self.reader.get()
+						let keyCount: UInt16 = try self.reader.get()
 						
 						//	We should not have more keys than the count of the directory
 						//	entry would allow…
@@ -262,7 +258,7 @@ TIFFImageA
 						
 						for _ in 0..<keyCount
 						{
-							let geoKey = readGeoKeyEntry()
+							let geoKey = try readGeoKeyEntry()
 							ifd.geoKeyEntries.append(geoKey)
 							debugLog("\(geoKey)")
 						}
@@ -272,7 +268,7 @@ TIFFImageA
 					let offset = try de.validateOffset()
 					try self.reader.at(offset: offset)
 					{
-						ifd.geoDoubleParams = self.reader.get(count: de.count)
+						ifd.geoDoubleParams = try self.reader.get(count: Int(de.count))
 					}
 					
 				case .geoAsciiParams:
@@ -291,7 +287,7 @@ TIFFImageA
 		
 		//	More directories?
 		
-		let nextOffset: UInt32 = self.reader.get()
+		let nextOffset: UInt32 = try self.reader.get()
 		if nextOffset > 0
 		{
 			debugLog("There are more IFDs")
@@ -312,39 +308,42 @@ TIFFImageA
 	mutating
 	func
 	readOffset()
-		-> UInt64
+		throws
+		-> Int64
 	{
-		let offset: UInt64
+		let offset: Int64
 		switch (self.formatVersion)
 		{
 			case .v42:
-				let v42Offset: UInt32 = self.reader.get()
-				offset = UInt64(v42Offset)
+				let v42Offset: UInt32 = try self.reader.get()
+				offset = Int64(v42Offset)
 			
 			case .v43:
-				offset = self.reader.get()
+				offset = try self.reader.get()
 		}
 		
 		return offset
 	}
 	
 	/**
+		The entry count is 16 bit for TIFF v42, 64-bit for v43 (BigTIFF)…
 	*/
 	
 	mutating
 	func
 	readEntryCount()
-		-> UInt64
+		throws
+		-> Int64
 	{
-		let offset: UInt64
+		let offset: Int64
 		switch (self.formatVersion)
 		{
 			case .v42:
-				let v42Count: UInt16 = self.reader.get()
-				offset = UInt64(v42Count)
+				let v42Count: UInt16 = try self.reader.get()
+				offset = Int64(v42Count)
 			
 			case .v43:
-				offset = self.reader.get()
+				offset = try self.reader.get()
 		}
 		
 		return offset
@@ -353,17 +352,18 @@ TIFFImageA
 	mutating
 	func
 	readTagCount()
-		-> UInt64
+		throws
+		-> Int64
 	{
-		let offset: UInt64
+		let offset: Int64
 		switch (self.formatVersion)
 		{
 			case .v42:
-				let v42Count: UInt32 = self.reader.get()
-				offset = UInt64(v42Count)
+				let v42Count: UInt32 = try self.reader.get()
+				offset = Int64(v42Count)
 			
 			case .v43:
-				offset = self.reader.get()
+				offset = try self.reader.get()
 		}
 		
 		return offset
@@ -371,23 +371,23 @@ TIFFImageA
 	
 	mutating
 	func
-	read(count inCount: UInt64, ofType inType: TagType)
+	read(count inCount: Int64, ofType inType: TagType)
 		throws
-		-> [UInt64]
+		-> [Int64]
 	{
 		if inType == .short
 		{
-			let v: [UInt16] = self.reader.get(count: inCount)
-			return v.map { UInt64($0) }
+			let v: [UInt16] = try self.reader.get(count: Int(inCount))
+			return v.map { Int64($0) }
 		}
 		else if inType == .long
 		{
-			let v: [UInt32] = self.reader.get(count: inCount)
-			return v.map { UInt64($0) }
+			let v: [UInt32] = try self.reader.get(count: Int(inCount))
+			return v.map { Int64($0) }
 		}
 		else if inType == .long8
 		{
-			let v: [UInt64] = self.reader.get(count: inCount)
+			let v: [Int64] = try self.reader.get(count: Int(inCount))
 			return v
 		}
 		else
@@ -413,9 +413,9 @@ TIFFImageA
 		
 		if inDE.count < self.offsetSize			//	The string fits in the value TODO: -1?
 		{
-			let s: String = try self.reader.at(offset: inDE.location + 4 + UInt64(self.offsetSize))
+			let s: String = try self.reader.at(offset: inDE.location + 4 + Int64(self.offsetSize))
 			{
-				if let s: String = self.reader.get(count: inDE.count - 1)		//	Exclude trailing NULL
+				if let s: String = try self.reader.get(count: Int(inDE.count) - 1)		//	Exclude trailing NULL
 				{
 					debugLog("String \(s)")
 					return s
@@ -429,7 +429,7 @@ TIFFImageA
 			let offset = try inDE.validateOffset()
 			let s: String = try self.reader.at(offset: offset)
 			{
-				if let s: String = self.reader.get(count: inDE.count - 1)		//	Exclude trailing NULL
+				if let s: String = try self.reader.get(count: Int(inDE.count) - 1)		//	Exclude trailing NULL
 				{
 					debugLog("String '\(s)'")
 					return s
@@ -452,21 +452,21 @@ TIFFImageA
 		-> DirectoryEntry
 	{
 		let loc = self.reader.idx
-		let tagV: UInt16 = self.reader.get()
+		let tagV: UInt16 = try self.reader.get()
 		let tag = Tag.from(rawValue: tagV)
-		let tagTypeV: UInt16 = self.reader.get()
+		let tagTypeV: UInt16 = try self.reader.get()
 		let tagType = TagType.from(rawValue: tagTypeV)
 		
-		let count = readTagCount()
+		let count = try readTagCount()
 		
 		//	If the size of the data fits in the last field
 		//	(less than four or eight bytes, depending on format),
 		//	read it now…
 		
 		let values: DirectoryEntry.Value?
-		let offset: UInt64?
+		let offset: Int64?
 		
-		if count * UInt64(tagType.size) <= self.offsetSize
+		if count * Int64(tagType.size) <= self.offsetSize
 		{
 			offset = nil
 			
@@ -478,11 +478,11 @@ TIFFImageA
 			
 			if self.formatVersion == .v42
 			{
-				self.reader.seek(to: loc + Int(TagType.ifd.size))
+				try self.reader.seek(to: loc + Int64(TagType.ifd.size))
 			}
 			else if self.formatVersion == .v43
 			{
-				self.reader.seek(to: loc + Int(TagType.ifd8.size))
+				try self.reader.seek(to: loc + Int64(TagType.ifd8.size))
 			}
 			else
 			{
@@ -494,10 +494,10 @@ TIFFImageA
 			//	The offset field contains an offset…
 			
 			values = nil
-			offset = readOffset()
+			offset = try readOffset()
 		}
 		
-		let de = DirectoryEntry(location: UInt64(loc),
+		let de = DirectoryEntry(location: Int64(loc),
 								tag: tag,
 								type: tagType,
 								count: count,
@@ -514,7 +514,7 @@ TIFFImageA
 	}
 	
 	func
-	readValues(type inTagType: TagType, count inCount: UInt64)
+	readValues(type inTagType: TagType, count inCount: Int64)
 		throws
 		-> DirectoryEntry.Value
 	{
@@ -522,19 +522,19 @@ TIFFImageA
 		switch (inTagType)
 		{
 			case .byte, .short, .long, .long8:
-				var vv = [UInt64]()
+				var vv = [Int64]()
 				for _ in 0 ..< inCount
 				{
 					switch (inTagType)
 					{
-						case .byte:		let v: UInt8 = self.reader.get();	vv.append(UInt64(v));	break
-						case .short:	let v: UInt16 = self.reader.get();	vv.append(UInt64(v));	break
-						case .long:		let v: UInt32 = self.reader.get();	vv.append(UInt64(v));	break
-						case .long8:	let v: UInt64 = self.reader.get();	vv.append(UInt64(v));	break
+						case .byte:		let v: UInt8 = try self.reader.get();	vv.append(Int64(v));	break
+						case .short:	let v: UInt16 = try self.reader.get();	vv.append(Int64(v));	break
+						case .long:		let v: UInt32 = try self.reader.get();	vv.append(Int64(v));	break
+						case .long8:	let v: Int64 = try self.reader.get();	vv.append(Int64(v));	break
 						default: fatalError()
 					}
 				}
-				values = .unsignedInt(vv)
+				values = .int(vv)
 				
 			case .sbyte, .sshort, .slong, .slong8:
 				var vv = [Int64]()
@@ -542,14 +542,14 @@ TIFFImageA
 				{
 					switch (inTagType)
 					{
-						case .sbyte:	let v: Int8 = self.reader.get();	vv.append(Int64(v));	break
-						case .sshort:	let v: Int16 = self.reader.get();	vv.append(Int64(v));	break
-						case .slong:	let v: Int32 = self.reader.get();	vv.append(Int64(v));	break
-						case .slong8:	let v: Int64 = self.reader.get();	vv.append(Int64(v));	break
+						case .sbyte:	let v: Int8 = try self.reader.get();	vv.append(Int64(v));	break
+						case .sshort:	let v: Int16 = try self.reader.get();	vv.append(Int64(v));	break
+						case .slong:	let v: Int32 = try self.reader.get();	vv.append(Int64(v));	break
+						case .slong8:	let v: Int64 = try self.reader.get();	vv.append(Int64(v));	break
 						default: fatalError()
 					}
 				}
-				values = .signedInt(vv)
+				values = .int(vv)
 			
 			case .float, .double:
 				var vv = [Double]()
@@ -557,34 +557,34 @@ TIFFImageA
 				{
 					switch (inTagType)
 					{
-						case .float:	let v: Float = self.reader.get();	vv.append(Double(v));	break
-						case .double:	let v: Double = self.reader.get();	vv.append(Double(v));	break
+						case .float:	let v: Float = try self.reader.get();	vv.append(Double(v));	break
+						case .double:	let v: Double = try self.reader.get();	vv.append(Double(v));	break
 						default: fatalError()
 					}
 				}
 				values = .double(vv)
 			
 			case .rational:
-				var vv = [Rational]()
+				var vv = [SRational8]()
 				for _ in 0 ..< inCount
 				{
-					let v: Rational = self.reader.get()
-					vv.append(v)
+					let v: Rational = try self.reader.get()
+					vv.append(SRational8(v))
 				}
 				values = .rational(vv)
 			
 			case .srational:
-				var vv = [SRational]()
+				var vv = [SRational8]()
 				for _ in 0 ..< inCount
 				{
-					let v: SRational = self.reader.get()
-					vv.append(v)
+					let v: SRational = try self.reader.get()
+					vv.append(SRational8(v))
 				}
-				values = .srational(vv)
+				values = .rational(vv)
 				
 			case .ascii:
 				//	TODO: TIFF allows embedding NULL characters to indicate multiple strings.
-				if let s: String = self.reader.get(count: inCount - 1)		//	Exclude trailing NULL
+				if let s: String = try self.reader.get(count: Int(inCount) - 1)		//	Exclude trailing NULL
 				{
 //					debugLog("String '\(s)'")
 					values = .ascii(s)
@@ -612,14 +612,16 @@ TIFFImageA
 	mutating
 	func
 	readGeoKeyEntry()
+		throws
 		-> GeoKeyEntry
 	{
-		let kv: UInt16 = self.reader.get()
+		let kv: UInt16 = try self.reader.get()
 		let geoKey = GeoKey.from(rawValue: kv)
+		let tagV: UInt16 = try self.reader.get()
 		let gke = GeoKeyEntry(key: geoKey,
-								tagLoc: Tag.from(rawValue: self.reader.get()),
-								count: self.reader.get(),
-								valueOffset: self.reader.get())
+								tagLoc: tagV == 0 ? Tag.none : Tag.from(rawValue: tagV),
+								count: try self.reader.get(),
+								valueOffset: try self.reader.get())
 		return gke
 	}
 	
@@ -693,9 +695,9 @@ TIFFImageA
 		if ifd.bitsPerSample == 16
 		{
 			let offset = Int(stripOffset) + 2 * idx
-			let v: UInt16 = try self.reader.at(offset: UInt64(offset))
+			let v: UInt16 = try self.reader.at(offset: Int64(offset))
 			{
-				let v: UInt16 = self.reader.get()
+				let v: UInt16 = try self.reader.get()
 				return v
 			}
 			return v
@@ -711,26 +713,47 @@ TIFFImageA
 		Read a row of pixel data.
 	*/
 	
+//	func
+//	read(row inY: Int64, startX inStartX: Int64, width inWidth: Int64)
+//		throws
+//		-> Data
+//	{
+//		guard let ifd = self.ifd else { throw Error.noImage }
+//
+//		let stripIndex = inY / Int64(ifd.rowsPerStrip)
+//		let stripOffset = ifd.stripOffsets[Int(stripIndex)]
+//		//	TODO: validate coordinates in strip (especially last strip)
+////		let stripByteCount = ifd.stripByteCounts[Int(stripIndex)]
+//		let rowInStrip = inY % Int64(ifd.rowsPerStrip)
+//		let rowBytes = ifd.width * 2
+//
+//		let bytesPerPixel = Int64(ifd.samplesPerPixel * ifd.bitsPerSample / 8)
+//		let startIndex = stripOffset + rowInStrip * Int64(rowBytes) + inStartX * bytesPerPixel
+//		let endIndex = startIndex + inWidth * bytesPerPixel
+//
+//		let data = try self.reader.data[startIndex ..< endIndex]
+//		return data
+//	}
+	
 	func
-	read(row inY: UInt64, startX inStartX: UInt64, width inWidth: UInt64)
+	read(into inBuf: UnsafeMutableRawBufferPointer, row inY: Int64, startX inStartX: Int64)
 		throws
-		-> Data
+		-> Int
 	{
 		guard let ifd = self.ifd else { throw Error.noImage }
 		
-		let stripIndex = inY / UInt64(ifd.rowsPerStrip)
+		let stripIndex = inY / Int64(ifd.rowsPerStrip)
 		let stripOffset = ifd.stripOffsets[Int(stripIndex)]
 		//	TODO: validate coordinates in strip (especially last strip)
 //		let stripByteCount = ifd.stripByteCounts[Int(stripIndex)]
-		let rowInStrip = inY % UInt64(ifd.rowsPerStrip)
-		let rowBytes = ifd.width * 2
+		let rowInStrip = inY % Int64(ifd.rowsPerStrip)
 		
-		let bytesPerPixel = UInt64(ifd.samplesPerPixel * ifd.bitsPerSample / 8)
-		let startIndex = stripOffset + rowInStrip * UInt64(rowBytes) + inStartX * bytesPerPixel
-		let endIndex = startIndex + inWidth * bytesPerPixel
+		let bytesPerPixel = Int64(ifd.samplesPerPixel * ifd.bitsPerSample / 8)
+		let rowBytes = Int64(ifd.width) * bytesPerPixel
 		
-		let data = self.reader.data[startIndex ..< endIndex]
-		return data
+		let startIndex = stripOffset + rowInStrip * Int64(rowBytes) + inStartX * bytesPerPixel
+		
+		return try self.reader.read(fromAbsoluteOffset: startIndex, into: inBuf)
 	}
 	
 	/**
@@ -747,11 +770,11 @@ TIFFImageA
 		var		blackIsZero												=	true
 		var		compression				:	CompressionType				=	.none
 		var		rowsPerStrip			:	UInt32						=	0
-		var		stripByteCounts			:	[UInt64]					=	[UInt64]()
-		var		stripOffsets			:	[UInt64]					=	[UInt64]()
+		var		stripByteCounts			:	[Int64]					=	[Int64]()
+		var		stripOffsets			:	[Int64]					=	[Int64]()
 		var		stripShortData			:	[[UInt16]?]?
 		
-		var		stripCount				:	UInt64						{ get { return UInt64((self.height + 1) / self.rowsPerStrip) } }
+		var		stripCount				:	Int64						{ get { return Int64((self.height + 1) / self.rowsPerStrip) } }
 																		//	Adding one to the height ensures that with integer division,
 																		//	the result includes any final partial strip.
 		
@@ -768,10 +791,10 @@ TIFFImageA
 		var		predictor				:	Predictor					=	.none
 		var		tileWidth				:	UInt32						=	0
 		var		tileLength				:	UInt32						=	0
-		var		tileOffsets				:	[UInt64]					=	[UInt64]()
-		var		tileByteCounts			:	[UInt64]					=	[UInt64]()
+		var		tileOffsets				:	[Int64]					=	[Int64]()
+		var		tileByteCounts			:	[Int64]					=	[Int64]()
 		
-		var		sampleFormat			:	UInt16						=	0
+		var		sampleFormat			:	SampleFormat				=	.unknown(0)
 		var		scaleX					:	Double						=	1.0
 		var		scaleY					:	Double						=	1.0
 		var		scaleZ					:	Double						=	1.0
@@ -803,7 +826,6 @@ TIFFImageA
 		}
 	}
 	
-	//	TODO: 8-byte versions of these!
 	struct
 	Rational : CustomDebugStringConvertible
 	{
@@ -829,6 +851,36 @@ TIFFImageA
 	}
 	
 	struct
+	SRational8 : CustomDebugStringConvertible
+	{
+		let		numerator		:	Int64
+		let		denominator		:	Int64
+		
+		init()
+		{
+			self.numerator = 0
+			self.denominator = 1
+		}
+		
+		init(_ inV: Rational)
+		{
+			self.numerator = Int64(inV.numerator)
+			self.denominator = Int64(inV.denominator)
+		}
+		
+		init(_ inV: SRational)
+		{
+			self.numerator = Int64(inV.numerator)
+			self.denominator = Int64(inV.denominator)
+		}
+		
+		var debugDescription: String
+		{
+			return "\(self.numerator) / \(self.denominator) = \(Double(self.numerator) / Double(self.denominator)))"
+		}
+	}
+	
+	struct
 	ModelTiePoint
 	{
 		let i		:	Double
@@ -845,30 +897,28 @@ TIFFImageA
 		enum
 		Value
 		{
-			case signedInt([Int64])
-			case unsignedInt([UInt64])
-			case rational([Rational])
-			case srational([SRational])
+			case int([Int64])
+			case rational([SRational8])
 			case double([Double])
 			case ascii(String)
 			case undefined(Data)
 		}
 		
-		let		location			:	UInt64			//	Location in file of this Entry
+		let		location			:	Int64			//	Location in file of this Entry
 		let		tag					:	Tag
 		let		type				:	TagType
-		let		count				:	UInt64
+		let		count				:	Int64
 		let		values				:	Value?
-		let		offset				:	UInt64?
+		let		offset				:	Int64?
 		
 		//	TODO: This returns an array. Should we name it as such?
 		func
-		validateUInt(count inCount: UInt64)
+		validateInt(count inCount: Int64)
 			throws
-			-> [UInt64]
+			-> [Int64]
 		{
 			guard
-				case let .unsignedInt(values) = self.values,
+				case let .int(values) = self.values,
 				self.count == inCount
 			else
 			{
@@ -881,7 +931,7 @@ TIFFImageA
 		func
 		validateOffset()
 			throws
-			-> UInt64
+			-> Int64
 		{
 			guard
 				let offset = self.offset
@@ -904,7 +954,7 @@ TIFFImageA
 			guard
 				self.count == 1,
 				self.type == .byte || self.type == .short,// || self.type == .long
-				case let .unsignedInt(values) = self.values
+				case let .int(values) = self.values
 			else
 			{
 				throw Error.tagTypeConversionError
@@ -923,7 +973,7 @@ TIFFImageA
 			guard
 				self.count == 1,
 				self.type == .byte || self.type == .short || self.type == .long,
-				case let .unsignedInt(values) = self.values
+				case let .int(values) = self.values
 			else
 			{
 				throw Error.tagTypeConversionError
@@ -1142,6 +1192,7 @@ TIFFImageA
 		case geoDoubleParams
 		case geoAsciiParams
 		
+		case none													//	For GeoKeys
 		case gdalMetadata											//	ascii	https://www.awaresystems.be/imaging/tiff/tifftags/gdal_metadata.html
 		case gdalNoData												//	ascii	https://www.awaresystems.be/imaging/tiff/tifftags/gdal_nodata.html
 		
@@ -1339,6 +1390,35 @@ TIFFImageA
 	}
 	
 	enum
+	SampleFormat
+	{
+		case unknown(UInt16)
+		case unsignedInt
+		case signedInt
+		case float
+		case void
+		case complexInt
+		case complextFloat
+		
+		static
+		func
+		from(rawValue inV: UInt16)
+			-> SampleFormat
+		{
+			switch (inV)
+			{
+				case 1:		return .unsignedInt
+				case 2:		return .signedInt
+				case 3:		return .float
+				case 4:		return .void
+				case 5:		return .complexInt
+				case 6:		return .complextFloat
+				default:	return .unknown(inV)
+			}
+		}
+	}
+	
+	enum
 	AngularUnit
 	{
 		case radian
@@ -1393,7 +1473,7 @@ TIFFImageA
 	
 	var			formatVersion		:	FormatVersion	=	.v42
 	var			offsetSize			:	Int				=	4			//	Size of offsets in bytes. 8 for BigTIFF/.v43
-	var			reader				:	BinaryReader
+	var			reader				:	BinaryFileReader
 	var			directoryEntries						=	[Tag:DirectoryEntry]()
 	var			ifd					:	IFD?
 }
@@ -1420,6 +1500,32 @@ BinaryReader
 	{
 		let n: Int32 = get()
 		let d: Int32 = get()
+		return TIFFImageA.SRational(numerator: n, denominator: d)
+	}
+}
+
+extension
+BinaryFileReader
+{
+	@inlinable
+	func
+	get()
+		throws
+		-> TIFFImageA.Rational
+	{
+		let n: UInt32 = try get()
+		let d: UInt32 = try get()
+		return TIFFImageA.Rational(numerator: n, denominator: d)
+	}
+	
+	@inlinable
+	func
+	get()
+		throws
+		-> TIFFImageA.SRational
+	{
+		let n: Int32 = try get()
+		let d: Int32 = try get()
 		return TIFFImageA.SRational(numerator: n, denominator: d)
 	}
 }
@@ -1472,29 +1578,29 @@ BigTIFFImageProvider : CIImageProvider
 			let destinationByteCount = inHeight * inRowbytes
 			let dest = UnsafeMutableRawBufferPointer(start: ioData, count: destinationByteCount)
 			
-			let originX = UInt64(inX)
-			let originY = UInt64(inY)
-			let width = UInt64(inWidth)
+			let originX = Int64(inX)
+			let originY = Int64(inY)
+			let width = Int64(inWidth)
 			
 			//	Find the first strip needed…
 			
 			guard let ifd = self.tiffImage.ifd else { return }
 			let bytesPerPixel = ifd.samplesPerPixel * ifd.bitsPerSample / 8
-			for row in 0 ..< UInt64(inHeight)
+			for row in 0 ..< Int64(inHeight)
 			{
 				let y = originY + row
 //				let stripIndex = y / UInt64(ifd.rowsPerStrip)
 //				let stripOffset = ifd.stripOffsets[Int(stripIndex)]
 				
-				let data = try self.tiffImage.read(row: y, startX: originX, width: width)
 				
 				//	Make a new UMRBP to point to the desired slice of the destination…
 				//	TODO: Handle endianness differences!!
 				
-				let bpStart = Int(row * UInt64(inRowbytes))
+				let bpStart = Int(row * Int64(inRowbytes))
 				let bpEnd = bpStart + inWidth * Int(bytesPerPixel)
 				let destSlice = UnsafeMutableRawBufferPointer(rebasing: dest[bpStart..<bpEnd])
-				destSlice.copyBytes(from: data)
+				let bytesRead = try self.tiffImage.read(into: destSlice, row: y, startX: originX)
+				assert(bytesRead == width * Int64(bytesPerPixel))
 			}
 		}
 		
