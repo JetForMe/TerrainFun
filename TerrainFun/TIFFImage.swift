@@ -24,6 +24,7 @@ import Foundation
 		
 	
 */
+//	TODO: Give up on 32-bit support, it'll make life a lot easier (assume Int and UInt are 64-bit or larger).
 
 struct
 TIFFImageA
@@ -1543,15 +1544,12 @@ TIFFImageA.ModelTiePoint : CustomDebugStringConvertible
 class
 BigTIFFImageProvider : CIImageProvider
 {
-	let			kRowReadCount				=	1024		//	Read this many rows at a time
-	
-	var			rows			:	[[UInt16]?]!
-	
 	init(tiff inTiffImage: TIFFImageA)
 	{
 		self.tiffImage = inTiffImage
+		self.ifd = self.tiffImage.ifd!
 		
-		self.rows = [[UInt16]?](repeating: nil, count: Int(self.tiffImage.ifd!.height))
+		self.rowBlocks = [[UInt8]?](repeating: nil, count: Int(self.ifd.height))
 	}
 	
 	/**
@@ -1582,34 +1580,29 @@ BigTIFFImageProvider : CIImageProvider
 			let destinationByteCount = inHeight * inRowbytes
 			let dest = UnsafeMutableRawBufferPointer(start: ioData, count: destinationByteCount)
 			
-			let originX = Int64(inX)
-			let originY = Int64(inY)
-			let width = Int64(inWidth)
-			
 			//	Find the first strip needed…
 			
-			guard let ifd = self.tiffImage.ifd else { return }
-			let bytesPerPixel = ifd.samplesPerPixel * ifd.bitsPerSample / 8
-			for row in 0 ..< Int64(inHeight)
+			let bytesPerPixel = Int(self.ifd.samplesPerPixel * ifd.bitsPerSample / 8)
+			for row in 0 ..< inHeight
 			{
-				let y = originY + row
+				let y = inY + row
 //				let stripIndex = y / UInt64(ifd.rowsPerStrip)
 //				let stripOffset = ifd.stripOffsets[Int(stripIndex)]
 				
 				//	If the row data hasn’t been read, read it…
 				
-				
+				try loadRows(including: y)
 				
 				//	Make a new UMRBP to point to the desired slice of the destination…
 				//	TODO: Handle endianness differences!!
 				
-				let bpStart = Int(row * Int64(inRowbytes))
-				let bpEnd = bpStart + inWidth * Int(bytesPerPixel)
+				let bpStart = row * inRowbytes
+				let bpEnd = bpStart + inWidth * bytesPerPixel
 				let destSlice = UnsafeMutableRawBufferPointer(rebasing: dest[bpStart..<bpEnd])
 				
 				let readStart = CFAbsoluteTimeGetCurrent()
-				let bytesRead = try self.tiffImage.read(into: destSlice, row: y, startX: originX)
-				assert(bytesRead == width * Int64(bytesPerPixel))
+				let bytesRead = try self.tiffImage.read(into: destSlice, row: Int64(y), startX: Int64(inX))
+				assert(bytesRead == inWidth * bytesPerPixel)
 				let readEnd = CFAbsoluteTimeGetCurrent()
 				debugLog("Read took: \(readEnd - readStart) s")
 			}
@@ -1618,10 +1611,46 @@ BigTIFFImageProvider : CIImageProvider
 		catch (let e)
 		{
 			debugLog("Error reading image data \(e)")
+			//	TODO: How do we handle this??? Write bug to Apple indicating there's no way
+			//	to report an error to Core Image. Maybe we just leave the data as-is, and
+			//	problems show up in the results. Lame. Maybe set error for other code to check.
 		}
 	}
 	
+	/**
+		Load the block of rows that include the specified row.
+	*/
+	
+	func
+	loadRows(including inIncludingRow: Int)
+		throws
+	{
+		let rowBlock = inIncludingRow / kRowReadCount
+		guard self.rowBlocks[rowBlock] == nil else { return }				//	Just bail if we’re called unnecessarily
+		
+		//	TODO: Check that strips are contiguous! For the Mars MOLA data they are, but that's not guaranteed!
+		//	TODO: Check for smaller last block!
+		
+		let firstRowOfBlock = rowBlock * kRowReadCount
+		let blockSize = Int(self.ifd.stripByteCounts[firstRowOfBlock ..< firstRowOfBlock + kRowReadCount].reduce(0, +))
+		let offset = self.ifd.stripOffsets[firstRowOfBlock]
+		let block = try [UInt8](unsafeUninitializedCapacity: blockSize)
+						{ (ioBuf: inout UnsafeMutableBufferPointer<UInt8>, ioCount: inout Int) in
+							let buffer = UnsafeMutableRawBufferPointer(ioBuf)
+							let bytesRead = try self.tiffImage.reader.fd.read(fromAbsoluteOffset: offset, into: buffer)
+							ioCount = bytesRead
+							assert(bytesRead == blockSize)
+						}
+		self.rowBlocks[rowBlock] = block
+	}
+	
 	let			tiffImage			:	TIFFImageA
+	let			ifd					:	TIFFImageA.IFD
+	
+	let			kRowReadCount								=	1024		//	Read this many rows at a time
+	
+	var			rowBlocks			:	[[UInt8]?]!							//	Our row data cache. TODO: Find a way to invalidate and purge!
+	
 }
 
 /**

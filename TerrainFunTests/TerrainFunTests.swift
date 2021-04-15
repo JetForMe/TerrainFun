@@ -29,6 +29,28 @@ TerrainFunTests: XCTestCase
     }
 	
 	func
+	testInitDataWithFileRead()
+		throws
+	{
+		let url = URL(fileURLWithPath: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif")
+		let fp = FilePath(url)!
+		let fd = try FileDescriptor.open(fp, .readOnly)
+		
+		let blockSize = 4
+		let buffer = UnsafeMutableRawPointer.allocate(byteCount: blockSize, alignment: MemoryLayout<UInt8>.alignment)
+		let bp = UnsafeMutableRawBufferPointer(start: buffer, count: blockSize)
+		let bytesRead = try fd.read(fromAbsoluteOffset: 0, into: bp)
+		let data = Data(bytesNoCopy: buffer, count: blockSize, deallocator: .custom({ b,c in b.deallocate() }))
+		XCTAssertEqual(bytesRead, data.count)
+		print("Data: \(data)")
+		
+		let d2 = try Data(unsafeUninitializedCapacity: blockSize) { (ioBuf, ioCount) in
+			ioCount = try fd.read(fromAbsoluteOffset: 0, into:  ioBuf)
+		}
+		print("D2: \(d2)")
+	}
+	
+	func
 	testInitArrayWithFileRead()
 		throws
 	{
@@ -191,4 +213,38 @@ TerrainFunTests: XCTestCase
     guard let destination = CGImageDestinationCreateWithURL(destinationURL as CFURL, kUTTypePNG, 1, nil) else { return false }
     CGImageDestinationAddImage(destination, image, nil)
     return CGImageDestinationFinalize(destination)
+}
+
+
+extension
+Data
+{
+	init(unsafeUninitializedCapacity inCapacity: Int,
+			initializingWith initializer: (inout UnsafeMutableRawBufferPointer, inout Int) throws -> Void)
+		rethrows
+	{
+		let buffer = UnsafeMutableRawPointer.allocate(byteCount: inCapacity, alignment: MemoryLayout<UInt8>.alignment)
+		var bp = UnsafeMutableRawBufferPointer(start: buffer, count: inCapacity)
+		let originalAddress = bp.baseAddress
+		var count: Int = 0
+		defer
+		{
+			precondition(count <= inCapacity, "Initialized count set to greater than specified capacity.")
+			precondition(bp.baseAddress == originalAddress, "Can't reassign buffer in Array(unsafeUninitializedCapacity:initializingWith:)")
+		}
+		
+		do
+		{
+			try initializer(&bp, &count)
+		}
+		
+		catch (let e)
+		{
+			//  Ensure the buffer gets deallocated no matter what. Might be better to just deallocate it directly
+			self = Data(bytesNoCopy: buffer, count: count, deallocator: .custom({ b,c in b.deallocate() }))
+			throw e
+		}
+		
+		self = Data(bytesNoCopy: buffer, count: count, deallocator: .custom({ b,c in b.deallocate() }))
+	}
 }
