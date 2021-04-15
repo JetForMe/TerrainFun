@@ -1543,14 +1543,18 @@ TIFFImageA.ModelTiePoint : CustomDebugStringConvertible
 class
 BigTIFFImageProvider : CIImageProvider
 {
+	let			kRowReadCount				=	1024		//	Read this many rows at a time
+	
+	var			rows			:	[[UInt16]?]!
+	
 	init(tiff inTiffImage: TIFFImageA)
 	{
 		self.tiffImage = inTiffImage
+		
+		self.rows = [[UInt16]?](repeating: nil, count: Int(self.tiffImage.ifd!.height))
 	}
 	
 	/**
-		Moves the BinaryReader index.
-		
 	*/
 	
 	@objc
@@ -1592,6 +1596,9 @@ BigTIFFImageProvider : CIImageProvider
 //				let stripIndex = y / UInt64(ifd.rowsPerStrip)
 //				let stripOffset = ifd.stripOffsets[Int(stripIndex)]
 				
+				//	If the row data hasn’t been read, read it…
+				
+				
 				
 				//	Make a new UMRBP to point to the desired slice of the destination…
 				//	TODO: Handle endianness differences!!
@@ -1599,8 +1606,12 @@ BigTIFFImageProvider : CIImageProvider
 				let bpStart = Int(row * Int64(inRowbytes))
 				let bpEnd = bpStart + inWidth * Int(bytesPerPixel)
 				let destSlice = UnsafeMutableRawBufferPointer(rebasing: dest[bpStart..<bpEnd])
+				
+				let readStart = CFAbsoluteTimeGetCurrent()
 				let bytesRead = try self.tiffImage.read(into: destSlice, row: y, startX: originX)
 				assert(bytesRead == width * Int64(bytesPerPixel))
+				let readEnd = CFAbsoluteTimeGetCurrent()
+				debugLog("Read took: \(readEnd - readStart) s")
 			}
 		}
 		

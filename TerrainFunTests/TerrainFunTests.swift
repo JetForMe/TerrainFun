@@ -29,18 +29,35 @@ TerrainFunTests: XCTestCase
     }
 	
 	func
-	testFullLoadTime()
+	testInitArrayWithFileRead()
 		throws
 	{
 		let url = URL(fileURLWithPath: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif")
 		let fp = FilePath(url)!
-		let fd = try FileDescriptor.open(fp, .readOnly)	//	TODO: How do I close this?
-		let length = 4//1 * 1 * 1024 * 1024//Int(try fd.seek(offset: 0, from: .end))
-		let buf = UnsafeMutableRawBufferPointer.allocate(byteCount: length, alignment: MemoryLayout<UInt8>.alignment)
+		let fd = try FileDescriptor.open(fp, .readOnly)
+		let count = 1024
+		let values = try [UInt16](unsafeUninitializedCapacity: count)
+						{ (ioBuf: inout UnsafeMutableBufferPointer<UInt16>, ioCount: inout Int) in
+							let buffer = UnsafeMutableRawBufferPointer(ioBuf)
+							let bytesRead = try fd.read(into: buffer)
+							ioCount = bytesRead / MemoryLayout<UInt16>.size
+							//	TODO: Throw unexpectedEOF if ioCount < ioBuf.count
+						}
+		print("Got \(values.count) values: \(values[0]), \(values[1])")
+	}
+	
+	func
+	testLargeReadTime()
+		throws
+	{
+		let url = URL(fileURLWithPath: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif")
+		let fp = FilePath(url)!
+		let fd = try FileDescriptor.open(fp, .readOnly)
+		let length = 2 * 1024 * 1024 * 1024 - 1		//	Int32.maxValue is the most we can read
+		let buf = UnsafeMutableRawBufferPointer.allocate(byteCount: Int(length), alignment: MemoryLayout<UInt8>.alignment)
 		defer { buf.deallocate() }
-//		buf.initializeMemory(as: UInt8.self, repeating: 0)
 		let readCount = try fd.read(fromAbsoluteOffset: 0, into: buf)
-		XCTAssertEqual(readCount, length)
+		XCTAssertEqual(readCount, Int(length))
 	}
 	
     func
