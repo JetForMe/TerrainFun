@@ -299,15 +299,36 @@ TerrainFunTests: XCTestCase
 						xOff: 0, yOff: 0, xSize: ds.xSize, ySize: ds.ySize)
 		debugLog("Finished read")
 		
-		let imageData = Data(bytesNoCopy: buf, count: byteCount, deallocator: .custom({ (inP, inCount) in inP.deallocate() }))
-		let ii = CIImage(bitmapData: imageData, bytesPerRow: byteCount, size: CGSize(width: width, height:  height), format: .L16, colorSpace: nil)
+		let cs = CGColorSpace(name: CGColorSpace.linearGray)!
 		
+		let imageData = Data(bytesNoCopy: buf, count: byteCount, deallocator: .custom({ (inP, inCount) in inP.deallocate() }))
+		let ii = CIImage(bitmapData: imageData, bytesPerRow: width * bytesPerPixel,
+							size: CGSize(width: width, height:  height),
+							format: .L16, colorSpace: nil)
+		
+		let hs = HeightShader()
+		hs.inputImage = ii
+		
+		let ctx = CIContext(options: [.workingColorSpace : nil,
+										.outputColorSpace : nil,
+										.workingFormat : CIFormat.L16,
+//										.outputPremultiplied : true,
+									])
+		let outputImage = hs.outputImage!
+		let image = ctx.createCGImage(outputImage, from: outputImage.extent)//, format: .L16, colorSpace: cs)
+		XCTAssertNotNil(image, "")
+//		XCTAssertEqual(image!.bitsPerComponent, 16)
+		
+		//	Write the image to disk…
+		
+		let destURL = URL(fileURLWithPath: "/Users/rmann/Downloads/TestImage.tiff")
+		writeCGImage(image!, to: destURL)
 	}
 }
 
 
 @discardableResult func writeCGImage(_ image: CGImage, to destinationURL: URL) -> Bool {
-    guard let destination = CGImageDestinationCreateWithURL(destinationURL as CFURL, kUTTypePNG, 1, nil) else { return false }
+    guard let destination = CGImageDestinationCreateWithURL(destinationURL as CFURL, kUTTypeTIFF, 1, nil) else { return false }
     CGImageDestinationAddImage(destination, image, nil)
     return CGImageDestinationFinalize(destination)
 }

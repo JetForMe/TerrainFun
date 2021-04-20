@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -23,6 +23,8 @@
 		C68649D0262ECD8F00035B75 /* GDALImageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C68649CF262ECD8F00035B75 /* GDALImageProvider.swift */; };
 		C68649D4262ECDA200035B75 /* CIImageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C68649D3262ECDA200035B75 /* CIImageProvider.swift */; };
 		C68649D8262EDF0600035B75 /* InstrumentationUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C68649D7262EDF0600035B75 /* InstrumentationUtilities.swift */; };
+		C68649E0262EED2D00035B75 /* HeightShader.swift in Sources */ = {isa = PBXBuildFile; fileRef = C68649DF262EED2D00035B75 /* HeightShader.swift */; };
+		C68649E8262EEFBE00035B75 /* HeightShader.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = C68649E7262EEFBE00035B75 /* HeightShader.ci.metal */; };
 		C6AE5D7024C94F6A000EDC78 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C6AE5D6F24C94F6A000EDC78 /* Assets.xcassets */; };
 		C6AE5D7F24C94F6B000EDC78 /* TerrainFunTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5D7E24C94F6B000EDC78 /* TerrainFunTests.swift */; };
 		C6AE5D8A24C94F6B000EDC78 /* TerrainFunUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5D8924C94F6B000EDC78 /* TerrainFunUITests.swift */; };
@@ -30,6 +32,37 @@
 		C6CAB72E24D152C500136F90 /* BinaryReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6CAB72D24D152C500136F90 /* BinaryReader.swift */; };
 		C6CAB73024D1596800136F90 /* TIFFImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6CAB72F24D1596800136F90 /* TIFFImage.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXBuildRule section */
+		C68649E3262EEEBF00035B75 /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.proxy.script;
+			filePatterns = "*.ci.metal";
+			fileType = pattern.proxy;
+			inputFiles = (
+			);
+			isEditable = 1;
+			outputFiles = (
+				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE).air",
+			);
+			runOncePerArchitecture = 0;
+			script = "xcrun metal -c -I $MTL_HEADER_SEARCH_PATHS -fcikernel \"${INPUT_FILE_PATH}\" -o \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+		};
+		C68649E4262EEF4B00035B75 /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.proxy.script;
+			filePatterns = "*.ci.air";
+			fileType = pattern.proxy;
+			inputFiles = (
+			);
+			isEditable = 1;
+			outputFiles = (
+				"$(METAL_LIBRARY_OUTPUT_DIR)/$(INPUT_FILE_BASE).metallib",
+			);
+			runOncePerArchitecture = 0;
+			script = "xcrun metallib -cikernel \"${INPUT_FILE_PATH}\" -o \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+		};
+/* End PBXBuildRule section */
 
 /* Begin PBXContainerItemProxy section */
 		C6AE5D7B24C94F6B000EDC78 /* PBXContainerItemProxy */ = {
@@ -75,6 +108,8 @@
 		C68649CF262ECD8F00035B75 /* GDALImageProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GDALImageProvider.swift; sourceTree = "<group>"; };
 		C68649D3262ECDA200035B75 /* CIImageProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CIImageProvider.swift; sourceTree = "<group>"; };
 		C68649D7262EDF0600035B75 /* InstrumentationUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstrumentationUtilities.swift; sourceTree = "<group>"; };
+		C68649DF262EED2D00035B75 /* HeightShader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeightShader.swift; sourceTree = "<group>"; };
+		C68649E7262EEFBE00035B75 /* HeightShader.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = HeightShader.ci.metal; sourceTree = "<group>"; };
 		C6AE5D6624C94F68000EDC78 /* TerrainFun.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TerrainFun.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6AE5D6924C94F68000EDC78 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C6AE5D6B24C94F68000EDC78 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -183,6 +218,8 @@
 				C68649CF262ECD8F00035B75 /* GDALImageProvider.swift */,
 				C68649D3262ECDA200035B75 /* CIImageProvider.swift */,
 				C68649D7262EDF0600035B75 /* InstrumentationUtilities.swift */,
+				C68649DF262EED2D00035B75 /* HeightShader.swift */,
+				C68649E7262EEFBE00035B75 /* HeightShader.ci.metal */,
 				C6AE5D6F24C94F6A000EDC78 /* Assets.xcassets */,
 				C6AE5D7124C94F6A000EDC78 /* Main.storyboard */,
 				C6AE5D7424C94F6A000EDC78 /* Info.plist */,
@@ -222,6 +259,8 @@
 				C68649B0262EA67200035B75 /* Embed Libraries */,
 			);
 			buildRules = (
+				C68649E4262EEF4B00035B75 /* PBXBuildRule */,
+				C68649E3262EEEBF00035B75 /* PBXBuildRule */,
 			);
 			dependencies = (
 			);
@@ -345,6 +384,7 @@
 			files = (
 				C686492E26247F4400035B75 /* ViewController.swift in Sources */,
 				C6864956262706C600035B75 /* BinaryFileReader.swift in Sources */,
+				C68649E8262EEFBE00035B75 /* HeightShader.ci.metal in Sources */,
 				C68649D0262ECD8F00035B75 /* GDALImageProvider.swift in Sources */,
 				C6CAB72E24D152C500136F90 /* BinaryReader.swift in Sources */,
 				C6864912262468F800035B75 /* TerrainFunApp.swift in Sources */,
@@ -360,6 +400,7 @@
 				C6CAB73024D1596800136F90 /* TIFFImage.swift in Sources */,
 				C68649CC262EADB100035B75 /* GDALDataset.swift in Sources */,
 				C68649B4262EA68800035B75 /* GDAL.swift in Sources */,
+				C68649E0262EED2D00035B75 /* HeightShader.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
