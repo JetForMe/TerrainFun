@@ -10,7 +10,6 @@ import Cocoa
 
 import SceneKit
 
-import TIFFLib
 
 
 class

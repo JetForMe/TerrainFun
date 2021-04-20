@@ -9,6 +9,8 @@
 #ifndef BridgingHeader_h
 #define BridgingHeader_h
 
+#import <gdal.h>
+
 #import "TIFFLib/TIFFLib.h"
 
 #endif /* BridgingHeader_h */
