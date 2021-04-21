@@ -10,7 +10,9 @@ import XCTest
 @testable import TerrainFun
 
 import CoreImage
+import CoreVideo
 import System
+import UniformTypeIdentifiers
 
 /**
 	Example BigTIFF: https://astrogeology.usgs.gov/search/map/Mars/Topography/HRSC_MOLA_Blend/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2
@@ -19,6 +21,9 @@ import System
 class
 TerrainFunTests: XCTestCase
 {
+	let marsMola1024 = URL(fileURLWithPath: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/Mars_HRSC_MOLA_BlendDEM_Global_200mp_1024.tif")	//	  1,024 x    512
+	let marsMolaFull = URL(fileURLWithPath: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif")
+	let somewhereInUS = URL(fileURLWithPath: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/USGS_13_n36w112.tif")
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -32,8 +37,7 @@ TerrainFunTests: XCTestCase
 	testInitDataWithFileRead()
 		throws
 	{
-		let url = URL(fileURLWithPath: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif")
-		let fp = FilePath(url)!
+		let fp = FilePath(self.marsMolaFull)!
 		let fd = try FileDescriptor.open(fp, .readOnly)
 		
 		let blockSize = 4
@@ -54,8 +58,7 @@ TerrainFunTests: XCTestCase
 	testInitArrayWithFileRead()
 		throws
 	{
-		let url = URL(fileURLWithPath: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif")
-		let fp = FilePath(url)!
+		let fp = FilePath(self.marsMolaFull)!
 		let fd = try FileDescriptor.open(fp, .readOnly)
 		let count = 1024
 		let values = try [UInt16](unsafeUninitializedCapacity: count)
@@ -72,8 +75,7 @@ TerrainFunTests: XCTestCase
 	testLargeReadTime()
 		throws
 	{
-		let url = URL(fileURLWithPath: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif")
-		let fp = FilePath(url)!
+		let fp = FilePath(self.marsMolaFull)!
 		let fd = try FileDescriptor.open(fp, .readOnly)
 		let length = 2 * 1024 * 1024 * 1024 - 1		//	Int32.maxValue is the most we can read
 		let buf = UnsafeMutableRawBufferPointer.allocate(byteCount: Int(length), alignment: MemoryLayout<UInt8>.alignment)
@@ -86,9 +88,7 @@ TerrainFunTests: XCTestCase
     testReadTIFF()
     	throws
 	{
-//		let url = URL(fileURLWithPath: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/USGS_13_n36w112.tif")
-		let url = URL(fileURLWithPath: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif")
-		let ti = try! TIFFImageA(contentsOfURL: url)
+		let ti = try! TIFFImageA(contentsOfURL: self.marsMolaFull)
 		debugLog("Size: \(ti.ifd!.width), \(ti.ifd!.height)")
     }
     
@@ -99,17 +99,15 @@ TerrainFunTests: XCTestCase
     func
     testCGImageReadLargeGeoTIFF()
     {
-//		let url = URL(fileURLWithPath: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/USGS_13_n36w112.tif")
- 		let url = URL(fileURLWithPath: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif")
 		guard
-			let imageSource = CGImageSourceCreateWithURL(url as CFURL, nil),
+			let imageSource = CGImageSourceCreateWithURL(self.marsMolaFull as CFURL, nil),
 			let imageMD = CGImageSourceCopyProperties(imageSource, nil),
 			let metadata = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil),// as? [CFString:Any],
 			let img = CGImageSourceCreateImageAtIndex(imageSource, 0, [:] as CFDictionary)
 		else
 		{
 			//	We expect this to fail. If it ever succeeds, we might be out of a job…
-			debugLog("Couldn't open image at \(url.path)")
+			debugLog("Couldn't open image at \(self.marsMolaFull.path)")
 			return
 		}
 		
@@ -123,9 +121,7 @@ TerrainFunTests: XCTestCase
 	func
 	testCIImageProvider()
 	{
-		let url = URL(fileURLWithPath: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif")		//	106,694 x 53,347
-//		let url = URL(fileURLWithPath: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/Mars_HRSC_MOLA_BlendDEM_Global_200mp_1024.tif")	//	  1,024 x    512
-		let ti = try! TIFFImageA(contentsOfURL: url)
+		let ti = try! TIFFImageA(contentsOfURL: self.marsMolaFull)
 		let ip = BigTIFFImageProvider(tiff: ti)
 		let ci = CIImage(imageProvider: ip,
 							size: Int(ti.ifd!.width), Int(ti.ifd!.height),
@@ -148,7 +144,7 @@ TerrainFunTests: XCTestCase
 		//	Write the image to disk…
 		
 		let destURL = URL(fileURLWithPath: "/Users/rmann/Downloads/TestImage.png")
-		writeCGImage(image!, to: destURL)
+		writeCGImageAsPNG(image!, to: destURL)
 	}
 	
 	func
@@ -156,8 +152,7 @@ TerrainFunTests: XCTestCase
 	{
 		do
 		{
-			let url = URL(fileURLWithPath: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif")		//	106,694 x 53,347
-			let reader = try BinaryFileReader(url: url)
+			let reader = try BinaryFileReader(url: self.marsMolaFull)
 			XCTAssertEqual(reader.length, 11384463908)
 			
 			let endian: UInt16 = try reader.get()				//	Bytes 0-1 (endian)
@@ -184,8 +179,7 @@ TerrainFunTests: XCTestCase
 	{
 		do
 		{
-			let url = URL(fileURLWithPath: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/Mars_HRSC_MOLA_BlendDEM_Global_200mp_1024.tif")	//	  1,024 x    512
-			let reader = try BinaryFileReader(url: url)
+			let reader = try BinaryFileReader(url: self.marsMola1024)
 			XCTAssertEqual(reader.length, 529022)
 			
 			let endian: UInt16 = try reader.get()				//	Bytes 0-1 (endian)
@@ -214,7 +208,7 @@ TerrainFunTests: XCTestCase
 		XCTAssertEqual(s, "3.2.2")
 		
 		GDAL.allRegister()
-		let ds = GDAL.Dataset(path: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif")!
+		let ds = GDAL.Dataset(path: self.marsMolaFull.path)!
 //		let txfm = (try? ds.getGeoTransform()) ?? GDAL.GeoTransform()
 //		debugLog("Txfm: \(txfm)")
 		let width = ds.xSize
@@ -246,7 +240,7 @@ TerrainFunTests: XCTestCase
 	{
 		GDAL.allRegister()
 		
-		let dss = GDAL.Dataset(path: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif")
+		let dss = GDAL.Dataset(path: self.marsMolaFull.path)
 		guard let ds = dss else { XCTFail(); return }
 		
 		let ip = GDALImageProvider(dataset: ds)
@@ -276,14 +270,14 @@ TerrainFunTests: XCTestCase
 		//	Write the image to disk…
 		
 		let destURL = URL(fileURLWithPath: "/Users/rmann/Downloads/TestImage.png")
-		writeCGImage(image!, to: destURL)
+		writeCGImageAsPNG(image!, to: destURL)
 	}
 	
 	func
 	testDirectGDALRead()
 	{
 		GDAL.allRegister()
-		let dss = GDAL.Dataset(path: "/Users/rmann/Projects/Personal/TerrainFun/SampleData/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif")
+		let dss = GDAL.Dataset(path: self.marsMolaFull.path)
 		guard let ds = dss else { XCTFail(); return }
 		let band = ds.getRasterBand(1)
 		
@@ -299,7 +293,7 @@ TerrainFunTests: XCTestCase
 						xOff: 0, yOff: 0, xSize: ds.xSize, ySize: ds.ySize)
 		debugLog("Finished read")
 		
-		let cs = CGColorSpace(name: CGColorSpace.linearGray)!
+//		let cs = CGColorSpace(name: CGColorSpace.linearGray)!
 		
 		let imageData = Data(bytesNoCopy: buf, count: byteCount, deallocator: .custom({ (inP, inCount) in inP.deallocate() }))
 		let ii = CIImage(bitmapData: imageData, bytesPerRow: width * bytesPerPixel,
@@ -309,11 +303,12 @@ TerrainFunTests: XCTestCase
 		let hs = HeightShader()
 		hs.inputImage = ii
 		
-		let ctx = CIContext(options: [.workingColorSpace : nil,
-										.outputColorSpace : nil,
-										.workingFormat : CIFormat.L16,
+		let ctx = CIContext()
+//		let ctx = CIContext(options: [.workingColorSpace : nil,
+//										.outputColorSpace : nil,
+//										.workingFormat : CIFormat.L16,
 //										.outputPremultiplied : true,
-									])
+//									])
 		let outputImage = hs.outputImage!
 		let image = ctx.createCGImage(outputImage, from: outputImage.extent)//, format: .L16, colorSpace: cs)
 		XCTAssertNotNil(image, "")
@@ -321,48 +316,64 @@ TerrainFunTests: XCTestCase
 		
 		//	Write the image to disk…
 		
-		let destURL = URL(fileURLWithPath: "/Users/rmann/Downloads/TestImage.tiff")
-		writeCGImage(image!, to: destURL)
+		let destURL = URL(fileURLWithPath: "/Users/rmann/Downloads/TestImage.png")
+		writeCGImageAsPNG(image!, to: destURL)
+	}
+	
+	func
+	testDirectGDALReadCVPixelBuffer()
+	{
+		GDAL.allRegister()
+		let dss = GDAL.Dataset(path: self.marsMolaFull.path)
+		guard let ds = dss else { XCTFail(); return }
+		let band = ds.getRasterBand(1)
+		
+		let width = 5335
+		let height = 2668
+		let bytesPerPixel = MemoryLayout<Int16>.size
+		let byteCount = width * height * bytesPerPixel
+		let buf = UnsafeMutableRawPointer.allocate(byteCount: byteCount, alignment: MemoryLayout<Int16>.alignment)
+//		defer { buf.deallocate() }
+		
+		debugLog("Started read")
+		band.rasterRead(into: buf, bufferWidth: width, bufferHeight: height,
+						xOff: 0, yOff: 0, xSize: ds.xSize, ySize: ds.ySize)
+		debugLog("Finished read")
+		
+//		let cs = CGColorSpace(name: CGColorSpace.linearGray)!
+		
+//		let imageData = Data(bytesNoCopy: buf, count: byteCount, deallocator: .custom({ (inP, inCount) in inP.deallocate() }))
+		var pb: CVPixelBuffer?
+		let res = CVPixelBufferCreateWithBytes(kCFAllocatorDefault, width, height, kCVPixelFormatType_OneComponent16, buf, width * bytesPerPixel,
+												{ (inMutableP, inP) in
+													inP?.deallocate()
+												}, nil, nil, &pb)
+		XCTAssertEqual(res, 0)
+		guard let pixBuf = pb else { return }
+		let ii = CIImage(cvPixelBuffer: pixBuf)
+		
+		let hs = HeightShader()
+		hs.inputImage = ii
+		
+		let ctx = CIContext()
+		let outputImage = hs.outputImage!
+		let image = ctx.createCGImage(outputImage, from: outputImage.extent)//, format: .L16, colorSpace: cs)
+		XCTAssertNotNil(image, "")
+//		XCTAssertEqual(image!.bitsPerComponent, 16)
+		
+		//	Write the image to disk…
+		
+		let destURL = URL(fileURLWithPath: "/Users/rmann/Downloads/TestImage.png")
+		writeCGImageAsPNG(image!, to: destURL)
 	}
 }
 
 
-@discardableResult func writeCGImage(_ image: CGImage, to destinationURL: URL) -> Bool {
-    guard let destination = CGImageDestinationCreateWithURL(destinationURL as CFURL, kUTTypeTIFF, 1, nil) else { return false }
+@discardableResult
+func
+writeCGImageAsPNG(_ image: CGImage, to destinationURL: URL) -> Bool
+{
+	guard let destination = CGImageDestinationCreateWithURL(destinationURL as CFURL, UTType.png.identifier as CFString, 1, nil) else { return false }
     CGImageDestinationAddImage(destination, image, nil)
     return CGImageDestinationFinalize(destination)
-}
-
-
-extension
-Data
-{
-	init(unsafeUninitializedCapacity inCapacity: Int,
-			initializingWith initializer: (inout UnsafeMutableRawBufferPointer, inout Int) throws -> Void)
-		rethrows
-	{
-		let buffer = UnsafeMutableRawPointer.allocate(byteCount: inCapacity, alignment: MemoryLayout<UInt8>.alignment)
-		var bp = UnsafeMutableRawBufferPointer(start: buffer, count: inCapacity)
-		let originalAddress = bp.baseAddress
-		var count: Int = 0
-		defer
-		{
-			precondition(count <= inCapacity, "Initialized count set to greater than specified capacity.")
-			precondition(bp.baseAddress == originalAddress, "Can't reassign buffer in Array(unsafeUninitializedCapacity:initializingWith:)")
-		}
-		
-		do
-		{
-			try initializer(&bp, &count)
-		}
-		
-		catch (let e)
-		{
-			//  Ensure the buffer gets deallocated no matter what. Might be better to just deallocate it directly
-			self = Data(bytesNoCopy: buffer, count: count, deallocator: .custom({ b,c in b.deallocate() }))
-			throw e
-		}
-		
-		self = Data(bytesNoCopy: buffer, count: count, deallocator: .custom({ b,c in b.deallocate() }))
-	}
 }

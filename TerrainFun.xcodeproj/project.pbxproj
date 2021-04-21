@@ -25,6 +25,7 @@
 		C68649D8262EDF0600035B75 /* InstrumentationUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C68649D7262EDF0600035B75 /* InstrumentationUtilities.swift */; };
 		C68649E0262EED2D00035B75 /* HeightShader.swift in Sources */ = {isa = PBXBuildFile; fileRef = C68649DF262EED2D00035B75 /* HeightShader.swift */; };
 		C68649E8262EEFBE00035B75 /* HeightShader.ci.metal in Sources */ = {isa = PBXBuildFile; fileRef = C68649E7262EEFBE00035B75 /* HeightShader.ci.metal */; };
+		C68649EC262FF69A00035B75 /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = C68649EB262FF69A00035B75 /* Data.swift */; };
 		C6AE5D7024C94F6A000EDC78 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C6AE5D6F24C94F6A000EDC78 /* Assets.xcassets */; };
 		C6AE5D7F24C94F6B000EDC78 /* TerrainFunTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5D7E24C94F6B000EDC78 /* TerrainFunTests.swift */; };
 		C6AE5D8A24C94F6B000EDC78 /* TerrainFunUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5D8924C94F6B000EDC78 /* TerrainFunUITests.swift */; };
@@ -110,6 +111,7 @@
 		C68649D7262EDF0600035B75 /* InstrumentationUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstrumentationUtilities.swift; sourceTree = "<group>"; };
 		C68649DF262EED2D00035B75 /* HeightShader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeightShader.swift; sourceTree = "<group>"; };
 		C68649E7262EEFBE00035B75 /* HeightShader.ci.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = HeightShader.ci.metal; sourceTree = "<group>"; };
+		C68649EB262FF69A00035B75 /* Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 		C6AE5D6624C94F68000EDC78 /* TerrainFun.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TerrainFun.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6AE5D6924C94F68000EDC78 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C6AE5D6B24C94F68000EDC78 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -220,6 +222,7 @@
 				C68649D7262EDF0600035B75 /* InstrumentationUtilities.swift */,
 				C68649DF262EED2D00035B75 /* HeightShader.swift */,
 				C68649E7262EEFBE00035B75 /* HeightShader.ci.metal */,
+				C68649EB262FF69A00035B75 /* Data.swift */,
 				C6AE5D6F24C94F6A000EDC78 /* Assets.xcassets */,
 				C6AE5D7124C94F6A000EDC78 /* Main.storyboard */,
 				C6AE5D7424C94F6A000EDC78 /* Info.plist */,
@@ -393,6 +396,7 @@
 				C6AE5DEB24C97AE4000EDC78 /* Utils.swift in Sources */,
 				C686491A2624693200035B75 /* ProjectWindowContentView.swift in Sources */,
 				C686493126247F4400035B75 /* SCNViewFR.swift in Sources */,
+				C68649EC262FF69A00035B75 /* Data.swift in Sources */,
 				C686493026247F4400035B75 /* TerrainEditorScene.swift in Sources */,
 				C68649D4262ECDA200035B75 /* CIImageProvider.swift in Sources */,
 				C686492F26247F4400035B75 /* Document.swift in Sources */,
