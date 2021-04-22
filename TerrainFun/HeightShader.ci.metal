@@ -42,7 +42,6 @@ extern "C"
 coreimage::sample_t
 heightShader(coreimage::sample_t inS, coreimage::destination inDest)
 {
-	return inS;
 //	if (inS[0] < 0.25)
 //	{
 //		return coreimage::sample_h(1.0, 0.0, 0.0, 1.0);
@@ -60,15 +59,16 @@ heightShader(coreimage::sample_t inS, coreimage::destination inDest)
 //		return coreimage::sample_h(0.0, 1.0, 1.0, 1.0);
 //	}
 //	return coreimage::sample_h(1.0, 1.0, 1.0, 1.0);
-
-//	if (inS[0] < 1.0)
-//	{
-//		return coreimage::sample_t(0.0, 1.0, 0.0, 1.0);
-//	}
-//	else
-//	{
+	printf(inS[0]);
+	if (inS[0] == inS[1] && inS[1] == inS[2])
+	{
+		return coreimage::sample_t(0.0, 1.0, 0.0, 1.0);
+	}
+	else
+	{
+		return inS;
 //		return coreimage::sample_t(1.0, 0.0, 0.0, 1.0);
-//	}
+	}
 	
 //	return HSVtoRGB2(float4(inS[0], 1, 1, 1));
 }
