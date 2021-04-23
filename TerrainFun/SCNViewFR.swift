@@ -198,7 +198,7 @@ SCNViewFR: SCNView
 
 @objc
 protocol
-EditorSceneViewDelegate : class
+EditorSceneViewDelegate : AnyObject
 {
 	func		editorSceneView(_ inView: SCNViewFR, hoverNote inNote: Int)
 	func		editorSceneView(_ inView: SCNViewFR, unHoverNote inNote: Int)

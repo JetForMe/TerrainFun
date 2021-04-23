@@ -59,7 +59,7 @@ heightShader(coreimage::sample_t inS, coreimage::destination inDest)
 //		return coreimage::sample_h(0.0, 1.0, 1.0, 1.0);
 //	}
 //	return coreimage::sample_h(1.0, 1.0, 1.0, 1.0);
-	printf(inS[0]);
+	
 	if (inS[0] == inS[1] && inS[1] == inS[2])
 	{
 		return coreimage::sample_t(0.0, 1.0, 0.0, 1.0);

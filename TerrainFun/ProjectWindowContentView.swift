@@ -21,18 +21,54 @@ ProjectWindowContentView: View
     @Binding var document: ProjectDocument
 
     var body: some View {
-		HSplitView {
-			List() {
-				Text("Mars MOLA DEM")
-				Text("Contour")
-				Text("3D Mesh")
+		NavigationView {
+			List(0..<5) { layer in
+				HStack {
+					Text("Mars MOLA DEM")
+						.font(.headline)
+				}
+				.frame(idealWidth:200)
 			}
-			.frame(idealWidth:200)
-			Image("document-error")
-				.resizable()
-				.aspectRatio(contentMode: .fit)
+			
+			VStack {
+				Spacer()
+				
+//				ScrollView {
+				GeometryReader { inGeometry  in
+					Image("dev-image")
+						.resizable()
+						.aspectRatio(contentMode: .fit)
+//						.onHover(perform: { hovering in		//	This never gets called
+//							debugLog("hovering")
+//						})
+						.onAppear
+						{
+							NSEvent.addLocalMonitorForEvents(matching: [.mouseMoved]) { inEvent in
+								let globalFrame = inGeometry.frame(in: .global)
+								let p = inEvent.locationInWindow
+								if globalFrame.contains(p)
+								{
+									debugLog("mouse moved: \(p.x), \(p.y)")
+								}
+								return nil
+							}
+						}
+				}
+//				}
+				Spacer()
+				HStack
+				{
+					Text("X: \(1.0, specifier: "%0.f")")
+					Text("Y: \(1.0, specifier: "%0.f")")
+					Text("Lat: \(37.12345, specifier: "%0.4f")")
+					Text("Lon: \(-113.54321, specifier: "%0.4f")")
+					Spacer()
+				}
+			}
 		}
     }
+    
+    var shouldDisplayHover: Bool		=	false
 }
 
 struct
