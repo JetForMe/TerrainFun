@@ -33,6 +33,8 @@
 		C6AE5DEB24C97AE4000EDC78 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5DEA24C97AE4000EDC78 /* Utils.swift */; };
 		C6CAB72E24D152C500136F90 /* BinaryReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6CAB72D24D152C500136F90 /* BinaryReader.swift */; };
 		C6CAB73024D1596800136F90 /* TIFFImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6CAB72F24D1596800136F90 /* TIFFImage.swift */; };
+		C6EAFFD32632548300EFE402 /* TrackingArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6EAFFD22632548300EFE402 /* TrackingArea.swift */; };
+		C6EAFFD626327B9100EFE402 /* Layer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6EAFFD526327B9100EFE402 /* Layer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -133,6 +135,8 @@
 		C6AE5DEC24C97C51000EDC78 /* SCNViewFR.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCNViewFR.swift; sourceTree = "<group>"; };
 		C6CAB72D24D152C500136F90 /* BinaryReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinaryReader.swift; sourceTree = "<group>"; };
 		C6CAB72F24D1596800136F90 /* TIFFImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TIFFImage.swift; sourceTree = "<group>"; };
+		C6EAFFD22632548300EFE402 /* TrackingArea.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackingArea.swift; sourceTree = "<group>"; };
+		C6EAFFD526327B9100EFE402 /* Layer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Layer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -206,6 +210,7 @@
 		C6AE5D6824C94F68000EDC78 /* TerrainFun */ = {
 			isa = PBXGroup;
 			children = (
+				C6EAFFD426327B7500EFE402 /* Model */,
 				C6864911262468F800035B75 /* TerrainFunApp.swift */,
 				C6864937262579B800035B75 /* ProjectDocument.swift */,
 				C68649192624693200035B75 /* ProjectWindowContentView.swift */,
@@ -224,6 +229,7 @@
 				C68649DF262EED2D00035B75 /* HeightShader.swift */,
 				C68649E7262EEFBE00035B75 /* HeightShader.ci.metal */,
 				C68649EB262FF69A00035B75 /* Data.swift */,
+				C6EAFFD22632548300EFE402 /* TrackingArea.swift */,
 				C6AE5D6F24C94F6A000EDC78 /* Assets.xcassets */,
 				C6AE5D7124C94F6A000EDC78 /* Main.storyboard */,
 				C6AE5D7424C94F6A000EDC78 /* Info.plist */,
@@ -248,6 +254,14 @@
 				C6AE5D8B24C94F6B000EDC78 /* Info.plist */,
 			);
 			path = TerrainFunUITests;
+			sourceTree = "<group>";
+		};
+		C6EAFFD426327B7500EFE402 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				C6EAFFD526327B9100EFE402 /* Layer.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -391,8 +405,10 @@
 				C68649E8262EEFBE00035B75 /* HeightShader.ci.metal in Sources */,
 				C68649D0262ECD8F00035B75 /* GDALImageProvider.swift in Sources */,
 				C6CAB72E24D152C500136F90 /* BinaryReader.swift in Sources */,
+				C6EAFFD32632548300EFE402 /* TrackingArea.swift in Sources */,
 				C6864912262468F800035B75 /* TerrainFunApp.swift in Sources */,
 				C68649D8262EDF0600035B75 /* InstrumentationUtilities.swift in Sources */,
+				C6EAFFD626327B9100EFE402 /* Layer.swift in Sources */,
 				C6864938262579B900035B75 /* ProjectDocument.swift in Sources */,
 				C6AE5DEB24C97AE4000EDC78 /* Utils.swift in Sources */,
 				C686491A2624693200035B75 /* ProjectWindowContentView.swift in Sources */,

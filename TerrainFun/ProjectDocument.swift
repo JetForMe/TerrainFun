@@ -54,6 +54,8 @@ ProjectDocument : FileDocument
 //		let ip = BigTIFFImageProvider(contentsOf: url)
 //		let ci = CIImage(imageProvider: ip, size: 0, 0, format: .L16, colorSpace: nil, options: [.providerTileSize : [ 128, 128 ]])
 	}
+	
+	var				layers			:	[Layer]?
 }
 
 

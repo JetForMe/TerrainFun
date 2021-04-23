@@ -18,54 +18,23 @@ import SwiftUI
 struct
 ProjectWindowContentView: View
 {
-    @Binding var document: ProjectDocument
-
+    @Binding			var		document				:	ProjectDocument
+	
     var body: some View {
 		NavigationView {
 			List(0..<5) { layer in
-				HStack {
-					Text("Mars MOLA DEM")
-						.font(.headline)
-				}
-				.frame(idealWidth:200)
-			}
-			
-			VStack {
-				Spacer()
-				
-//				ScrollView {
-				GeometryReader { inGeometry  in
-					Image("dev-image")
-						.resizable()
-						.aspectRatio(contentMode: .fit)
-//						.onHover(perform: { hovering in		//	This never gets called
-//							debugLog("hovering")
-//						})
-						.onAppear
-						{
-							NSEvent.addLocalMonitorForEvents(matching: [.mouseMoved]) { inEvent in
-								let globalFrame = inGeometry.frame(in: .global)
-								let p = inEvent.locationInWindow
-								if globalFrame.contains(p)
-								{
-									debugLog("mouse moved: \(p.x), \(p.y)")
-								}
-								return nil
-							}
-						}
-				}
-//				}
-				Spacer()
-				HStack
-				{
-					Text("X: \(1.0, specifier: "%0.f")")
-					Text("Y: \(1.0, specifier: "%0.f")")
-					Text("Lat: \(37.12345, specifier: "%0.4f")")
-					Text("Lon: \(-113.54321, specifier: "%0.4f")")
-					Spacer()
+				NavigationLink(destination: LayerDetail()) {
+					HStack {
+						Text("Mars MOLA DEM")
+							.font(.headline)
+						Spacer()
+						Image(systemName: "eye")
+					}
 				}
 			}
+			.frame(idealWidth:200)
 		}
+		.navigationViewStyle(DoubleColumnNavigationViewStyle())
     }
     
     var shouldDisplayHover: Bool		=	false
@@ -77,6 +46,42 @@ ProjectWindowContentView_Previews: PreviewProvider
     static
     var previews: some View
     {
-        ProjectWindowContentView(document: .constant(ProjectDocument()))
+		ProjectWindowContentView(document: .constant(ProjectDocument()))
+			
     }
+}
+
+struct LayerDetail: View {
+	@State		private	var		cursorPosition			:	CGPoint			=	.zero
+	
+	var body: some View {
+		VStack {
+			Spacer()
+			
+			//				ScrollView {
+			Image("dev-image")
+				.resizable()
+				.trackingMouse { inPoint in
+					self.cursorPosition = inPoint
+				}
+				.aspectRatio(contentMode: .fit)
+			//				}
+			Spacer()
+			HStack
+			{
+				Text("X: \(self.cursorPosition.x, specifier: "%0.f")")
+					.frame(minWidth: 100, alignment: .leading)
+				
+				Text("Y: \(self.cursorPosition.y, specifier: "%0.f")")
+					.frame(minWidth: 100, alignment: .leading)
+				Text("Lat: \(37.12345, specifier: "%0.4f")")
+					.frame(minWidth: 100, alignment: .leading)
+				Text("Lon: \(-113.54321, specifier: "%0.4f")")
+					.frame(minWidth: 100, alignment: .leading)
+				Spacer()
+			}
+			.background(Color("status-bar-background"))
+		}
+		.background(Color("layer-background"))
+	}
 }
