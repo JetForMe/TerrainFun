@@ -129,6 +129,7 @@ struct LayerInfoBar: View {
 				.frame(minWidth: 100, alignment: .leading)
 			Spacer()
 		}
+		.frame(minWidth: 0.0, alignment: .leading)
 		.background(Color("status-bar-background"))
 	}
 }
