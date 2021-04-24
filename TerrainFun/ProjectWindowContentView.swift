@@ -88,14 +88,27 @@ LayerDetail: View
 {
 						let		layer					:	Layer
 	@State		private	var		cursorPosition			:	CGPoint			=	.zero
+	@State		private	var		imageScale				:	CGPoint			=	CGPoint(x: 1.0, y: 1.0)
 	
 	var body: some View {
 		VStack {
 			Spacer()
 			
 			//				ScrollView {
-			Image("dev-image")
-				.resizable()
+			
+			//	Get the image scaled for our current image size…
+			
+			let image: Image = {
+			if let wi = self.layer.workingImage
+			{
+				return  Image(nsImage: NSImage(cgImage: wi, size: .zero))
+			}
+			else
+			{
+				return Image("questionmark.square.dashed")
+			}}()
+			
+			image.resizable()
 				.trackingMouse { inPoint in
 					self.cursorPosition = inPoint
 				}
@@ -106,7 +119,8 @@ LayerDetail: View
 									})
 			//				}
 			Spacer()
-			LayerInfoBar(cursorPosition: self.cursorPosition)
+			let g = self.layer.projection!.geodetic(from: self.cursorPosition)
+			LayerInfoBar(cursorPosition: self.cursorPosition, geodeticPosition: g)
 		}
 		.background(Color("layer-background"))
 		.frame(minWidth: 100.0, idealWidth: 1600.0, minHeight: 100.0, idealHeight: 800.0)		//	TODO: Make default size relative to screen size
@@ -115,6 +129,7 @@ LayerDetail: View
 
 struct LayerInfoBar: View {
 	let		cursorPosition			:	CGPoint
+	let		geodeticPosition		:	CLLocationCoordinate2D
 	
 	var body: some View {
 		HStack
@@ -123,9 +138,9 @@ struct LayerInfoBar: View {
 				.frame(minWidth: 100, alignment: .leading)
 			Text("Y: \(self.cursorPosition.y, specifier: "%0.f")")
 				.frame(minWidth: 100, alignment: .leading)
-			Text("Lat: \(37.12345, specifier: "%0.4f")")
+			Text("Lat: \(self.geodeticPosition.latitude, specifier: "%0.4f")")
 				.frame(minWidth: 100, alignment: .leading)
-			Text("Lon: \(-113.54321, specifier: "%0.4f")")
+			Text("Lon: \(self.geodeticPosition.longitude, specifier: "%0.4f")")
 				.frame(minWidth: 100, alignment: .leading)
 			Spacer()
 		}

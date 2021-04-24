@@ -51,7 +51,12 @@ GDAL			//	For namespacing more than anything
 	{
 		init?(path inPath: String, access inAccess: Access = .readOnly)
 		{
-			if let ds = GDALOpen(inPath, GDALAccess(UInt32(inAccess.rawValue)))
+			self.init(url: URL(fileURLWithPath: inPath), access: inAccess)
+		}
+		
+		init?(url inURL: URL, access inAccess: Access = .readOnly)
+		{
+			if let ds = GDALOpen(inURL.path, GDALAccess(UInt32(inAccess.rawValue)))
 			{
 				self.ds = ds
 			}

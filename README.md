@@ -18,6 +18,29 @@ Install the following libraries:
 ```
 $ brew install gdal
 ```
+## Displaying a Scaled Image & Map Projections
+
+To properly display a GeoTIFF image and reference the current mouse pointer to a geodetic
+location, a number of transformations must occur:
+
+* The source image is likely *very* large, and must be scaled down for display
+
+	I’m not sure how to compute this SwiftUI. Normally it would handle displaying
+	an existing image in a nicely-constrained frame while preserving aspect ratio.
+	But we haven’t generated the image yet, and need to know how big to display it
+	before generating it.
+	
+	Ideally we tile it.
+	
+	**For now:** Generate a working image that’s a couple-thousand pixels wide and
+	let SwiftUI scale it. Then use `GeometryReader` to figure out what size
+	we made it.
+	
+* Current image coordinates to full-size image coordinates
+* Full-size image coordinates reverse-projected through the current map projection
+
+
+
 
 ### File Format Specifications
 
@@ -36,6 +59,9 @@ https://alastaira.wordpress.com/2013/11/12/importing-dem-terrain-heightmaps-for-
 The following is a draft of a blog post.
 
 # Processing BigTIFF Images with Core Image
+
+**Status:** Core Image can't handle signed 16-bit grayscale images, and so is useless for height maps.
+For now we’re using GDAL wrapped in Swift.
 
 Apple provides a number of image-manipulation and rendering APIs, and supports a number of
 widely-used image formats, including TIFF. What you might not know is there’s a closely related

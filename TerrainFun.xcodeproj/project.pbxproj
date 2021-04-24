@@ -212,12 +212,7 @@
 				C6864911262468F800035B75 /* TerrainFunApp.swift */,
 				C6864937262579B800035B75 /* ProjectDocument.swift */,
 				C68649192624693200035B75 /* ProjectWindowContentView.swift */,
-				C6AE5D6924C94F68000EDC78 /* AppDelegate.swift */,
-				C6AE5D6B24C94F68000EDC78 /* ViewController.swift */,
-				C6AE5D6D24C94F68000EDC78 /* Document.swift */,
-				C6AE5DE824C97A6C000EDC78 /* TerrainEditorScene.swift */,
 				C6AE5DEA24C97AE4000EDC78 /* Utils.swift */,
-				C6AE5DEC24C97C51000EDC78 /* SCNViewFR.swift */,
 				C6CAB72D24D152C500136F90 /* BinaryReader.swift */,
 				C6864955262706C600035B75 /* BinaryFileReader.swift */,
 				C6CAB72F24D1596800136F90 /* TIFFImage.swift */,
@@ -229,8 +224,8 @@
 				C68649EB262FF69A00035B75 /* Data.swift */,
 				C6EAFFD22632548300EFE402 /* TrackingArea.swift */,
 				C6EAFFD426327B7500EFE402 /* Model */,
+				C6EAFFD72634733400EFE402 /* Old Code */,
 				C6AE5D6F24C94F6A000EDC78 /* Assets.xcassets */,
-				C6AE5D7124C94F6A000EDC78 /* Main.storyboard */,
 				C6AE5D7424C94F6A000EDC78 /* Info.plist */,
 				C6AE5D7524C94F6A000EDC78 /* TerrainFun.entitlements */,
 			);
@@ -261,6 +256,19 @@
 				C6EAFFD526327B9100EFE402 /* Layer.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		C6EAFFD72634733400EFE402 /* Old Code */ = {
+			isa = PBXGroup;
+			children = (
+				C6AE5D6924C94F68000EDC78 /* AppDelegate.swift */,
+				C6AE5D6B24C94F68000EDC78 /* ViewController.swift */,
+				C6AE5D6D24C94F68000EDC78 /* Document.swift */,
+				C6AE5DE824C97A6C000EDC78 /* TerrainEditorScene.swift */,
+				C6AE5DEC24C97C51000EDC78 /* SCNViewFR.swift */,
+				C6AE5D7124C94F6A000EDC78 /* Main.storyboard */,
+			);
+			path = "Old Code";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

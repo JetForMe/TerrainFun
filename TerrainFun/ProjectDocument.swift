@@ -73,6 +73,60 @@ ProjectDocument : ReferenceFileDocument
 		{
 			self.layers.append(newLayer)
 		}
+		
+		//	Generate the working image…
+		//	TODO: Do this in the background. We’re actually called on a backround queue, but let's not rely on that.
+		
+		guard
+			let ds = GDAL.Dataset(url: inURL)
+		else
+		{
+			debugLog("Unabled to create dataset")
+			return
+		}
+		
+		let workingImage = image(ofMaximumSize: CGSize(width: 2048, height: 2048), from: ds)
+		newLayer.workingImage = workingImage
+	}
+	
+	func
+	image(ofMaximumSize inSize: CGSize, from inSource: GDAL.Dataset)
+		-> CGImage
+	{
+		//	TODO: So much error handling and flexibility needed here!
+		
+		let originalWidth = inSource.xSize
+		let originalHeight = inSource.ySize
+		let aspectRatio = CGFloat(originalWidth) / CGFloat(originalHeight)
+		
+		let width = ceil(inSize.width)
+		let height = ceil(width / aspectRatio)
+		let bytesPerPixel = MemoryLayout<Int16>.size
+		let byteCount = Int(width) * Int(height) * bytesPerPixel
+		let buf = UnsafeMutableRawPointer.allocate(byteCount: byteCount, alignment: MemoryLayout<Int16>.alignment)
+		
+		debugLog("Started read")
+		let band = inSource.getRasterBand(1)
+		band.rasterRead(into: buf, bufferWidth: Int(width), bufferHeight: Int(height),
+						xOff: 0, yOff: 0, xSize: originalWidth, ySize: originalHeight)
+		debugLog("Finished read")
+		
+		var pb: CVPixelBuffer?
+		let result = CVPixelBufferCreateWithBytes(kCFAllocatorDefault, Int(width), Int(height), kCVPixelFormatType_OneComponent16, buf, Int(width) * bytesPerPixel,
+												{ (inMutableP, inP) in
+													inP?.deallocate()
+												}, nil, nil, &pb)
+		assert(result == 0)
+		guard let pixBuf = pb else { assert(false) }
+		let ii = CIImage(cvPixelBuffer: pixBuf)
+		
+		let hs = HeightShader()
+		hs.inputImage = ii
+		
+		let ctx = CIContext()
+		let outputImage = hs.outputImage!
+		let image = ctx.createCGImage(ii, from: outputImage.extent)!
+		return image
 	}
 	
 	@Published	var				layers						:	[Layer]					=	[Layer]()
