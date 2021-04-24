@@ -23,7 +23,7 @@ TerrainFunApp: App
 		DocumentGroup(newDocument: ProjectDocument.init)
 		{ inGroup in
 			ProjectWindowContentView(document: inGroup.document)
-				.frame(width: 1800, height: 800)
+				.frame(minWidth: 301.0, minHeight: 100.0)
 		}
 		.commands
 		{
