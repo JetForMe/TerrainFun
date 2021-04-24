@@ -76,7 +76,8 @@ LayerItemCell: View
 {
 	var body: some View {
 		HStack {
-			Text("Mars MOLA DEM")
+			Text("Mars MOLA DEMasdf df asd fsdf")
+				.lineLimit(1)
 				.font(.headline)
 			Spacer()
 			Image(systemName: "eye")
