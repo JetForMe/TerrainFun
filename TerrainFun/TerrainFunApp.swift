@@ -11,6 +11,12 @@ import SwiftUI
 struct
 TerrainFunApp: App
 {
+	init()
+	{
+		let tdp = URL(fileURLWithPath: Bundle.main.infoDictionary?["TestDataDirectory"] as! String)
+		debugLog("Path: \(tdp.path)")
+	}
+	
 	var
 	body: some Scene
 	{

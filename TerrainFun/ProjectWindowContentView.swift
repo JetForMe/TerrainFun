@@ -19,10 +19,11 @@ struct
 ProjectWindowContentView: View
 {
     @Binding			var		document				:	ProjectDocument
-	
+	@State				var		dropTargeted			:	Bool = false
+						
     var body: some View {
 		NavigationView {
-			List(0..<5) { layer in
+			List(self.document.layers) { layer in
 				NavigationLink(destination: LayerDetail()) {
 					HStack {
 						Text("Mars MOLA DEM")
@@ -35,6 +36,10 @@ ProjectWindowContentView: View
 			.frame(idealWidth:200)
 		}
 		.navigationViewStyle(DoubleColumnNavigationViewStyle())
+		.onDrop(of: [.image], isTargeted: self.$dropTargeted, perform: { providers in
+			debugLog("drop: \(providers)")
+			return false
+		})
     }
     
     var shouldDisplayHover: Bool		=	false

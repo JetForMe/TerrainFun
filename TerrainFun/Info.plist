@@ -70,6 +70,8 @@
 	<true/>
 	<key>NSSupportsSuddenTermination</key>
 	<true/>
+	<key>TestDataDirectory</key>
+	<string>$(TerrainFunTestDataDirectory)</string>
 	<key>UTExportedTypeDeclarations</key>
 	<array>
 		<dict>

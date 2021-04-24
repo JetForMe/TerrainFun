@@ -55,7 +55,7 @@ ProjectDocument : FileDocument
 //		let ci = CIImage(imageProvider: ip, size: 0, 0, format: .L16, colorSpace: nil, options: [.providerTileSize : [ 128, 128 ]])
 	}
 	
-	var				layers			:	[Layer]?
+	var				layers			:	[Layer] = [Layer]()
 }
 
 

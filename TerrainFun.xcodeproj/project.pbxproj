@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C6630B542631334100B21999 /* TerrainFunTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5D7E24C94F6B000EDC78 /* TerrainFunTests.swift */; };
 		C6864912262468F800035B75 /* TerrainFunApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6864911262468F800035B75 /* TerrainFunApp.swift */; };
 		C686491A2624693200035B75 /* ProjectWindowContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C68649192624693200035B75 /* ProjectWindowContentView.swift */; };
 		C686492E26247F4400035B75 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5D6B24C94F68000EDC78 /* ViewController.swift */; };
@@ -210,7 +209,6 @@
 		C6AE5D6824C94F68000EDC78 /* TerrainFun */ = {
 			isa = PBXGroup;
 			children = (
-				C6EAFFD426327B7500EFE402 /* Model */,
 				C6864911262468F800035B75 /* TerrainFunApp.swift */,
 				C6864937262579B800035B75 /* ProjectDocument.swift */,
 				C68649192624693200035B75 /* ProjectWindowContentView.swift */,
@@ -230,6 +228,7 @@
 				C68649E7262EEFBE00035B75 /* HeightShader.ci.metal */,
 				C68649EB262FF69A00035B75 /* Data.swift */,
 				C6EAFFD22632548300EFE402 /* TrackingArea.swift */,
+				C6EAFFD426327B7500EFE402 /* Model */,
 				C6AE5D6F24C94F6A000EDC78 /* Assets.xcassets */,
 				C6AE5D7124C94F6A000EDC78 /* Main.storyboard */,
 				C6AE5D7424C94F6A000EDC78 /* Info.plist */,
@@ -413,7 +412,6 @@
 				C6AE5DEB24C97AE4000EDC78 /* Utils.swift in Sources */,
 				C686491A2624693200035B75 /* ProjectWindowContentView.swift in Sources */,
 				C686493126247F4400035B75 /* SCNViewFR.swift in Sources */,
-				C6630B542631334100B21999 /* TerrainFunTests.swift in Sources */,
 				C68649EC262FF69A00035B75 /* Data.swift in Sources */,
 				C686493026247F4400035B75 /* TerrainEditorScene.swift in Sources */,
 				C68649D4262ECDA200035B75 /* CIImageProvider.swift in Sources */,
@@ -527,6 +525,7 @@
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TestDataDirectory = "$(TerrainFunTestDataDirectory)";
 			};
 			name = Debug;
 		};
@@ -581,6 +580,7 @@
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				TestDataDirectory = "$(TerrainFunTestDataDirectory)";
 			};
 			name = Release;
 		};

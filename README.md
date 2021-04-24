@@ -1,6 +1,23 @@
 #  TerrainFun
 
+## Building
 
+Add a custom Xcode path (Preferences->Locations->Custom Paths) to your local directory containing test data, and call it `TerrainFunTestDataDirectory`.
+
+### Prerequisites
+
+Download the following test data:
+
+```
+$ curl "https://planetarymaps.usgs.gov/mosaic/Mars/HRSC_MOLA_Blend/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif" -o "<Your TerrainFunTestDataDirectory from above>"
+$ curl "https://astropedia.astrogeology.usgs.gov/download/Mars/Topography/HRSC_MOLA_Blend/thumbs/Mars_HRSC_MOLA_BlendDEM_Global_200mp_1024.jpg" -o "<Your TerrainFunTestDataDirectory from above>"
+```
+
+Install the following libraries:
+
+```
+$ brew install gdal
+```
 
 ### File Format Specifications
 

@@ -12,7 +12,7 @@ import SwiftUI
 
 
 class
-Layer : Identifiable
+Layer : ObservableObject
 {
 				var			id						:	UUID			=	UUID()
 	@Published	var			name					:	String?
