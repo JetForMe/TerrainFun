@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import UniformTypeIdentifiers
+
 /**
 	Might be a hint as to how to preview. This is for video, but it shows
 	using a Metal view in SwiftUI, and that's attached to a CIImage:
@@ -30,11 +32,25 @@ ProjectWindowContentView: View
 				}
 			}
 			.frame(minWidth: 200.0)
+			.border(Color.blue, width: self.dropTargeted ? 2 : 0)
 		}
 		.navigationViewStyle(DoubleColumnNavigationViewStyle())
-		.onDrop(of: [.image], isTargeted: self.$dropTargeted, perform: { providers in
-			debugLog("drop: \(providers)")
-			return false
+		.onDrop(of: [.fileURL], isTargeted: self.$dropTargeted, perform: { inProviders in
+			guard let p = inProviders.first else { return false }
+			
+			p.loadObject(ofClass: URL.self) { inURL, inError in
+				guard
+					let url = inURL
+				else
+				{
+					debugLog("Error: \(inError)")
+					return
+				}
+				
+				debugLog("URL: \(url.path)")
+			}
+			debugLog("drop: \(p)")
+			return true
 		})
     }
     
