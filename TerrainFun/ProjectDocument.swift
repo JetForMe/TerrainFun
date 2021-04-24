@@ -63,6 +63,18 @@ ProjectDocument : ReferenceFileDocument
 //		let ci = CIImage(imageProvider: ip, size: 0, 0, format: .L16, colorSpace: nil, options: [.providerTileSize : [ 128, 128 ]])
 	}
 	
+	func
+	importFile(url inURL: URL)
+	{
+		//	TODO: Don't assume all files are DEMs
+		
+		let newLayer = DEMLayer(url: inURL)
+		DispatchQueue.main.async
+		{
+			self.layers.append(newLayer)
+		}
+	}
+	
 	@Published	var				layers						:	[Layer]					=	[Layer]()
 
 

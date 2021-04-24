@@ -7,12 +7,18 @@
 
 import SwiftUI
 
+//import GDAL
+
+
+
 @main
 struct
 TerrainFunApp: App
 {
 	init()
 	{
+		GDAL.allRegister()
+		
 		let tdp = URL(fileURLWithPath: Bundle.main.infoDictionary?["TestDataDirectory"] as! String)
 		debugLog("Path: \(tdp.path)")
 	}

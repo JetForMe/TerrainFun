@@ -26,9 +26,9 @@ ProjectWindowContentView: View
     var body: some View
     {
 		NavigationView {
-			List(self.document.layers) { layer in
-				NavigationLink(destination: LayerDetail(layer: layer)) {
-					LayerItemCell()
+			List(self.document.layers) { inLayer in
+				NavigationLink(destination: LayerDetail(layer: inLayer)) {
+					LayerItemCell(layer: inLayer)
 				}
 			}
 			.frame(minWidth: 200.0)
@@ -38,16 +38,17 @@ ProjectWindowContentView: View
 		.onDrop(of: [.fileURL], isTargeted: self.$dropTargeted, perform: { inProviders in
 			guard let p = inProviders.first else { return false }
 			
-			p.loadObject(ofClass: URL.self) { inURL, inError in
+			_ = p.loadObject(ofClass: URL.self) { inURL, inError in
 				guard
 					let url = inURL
 				else
 				{
-					debugLog("Error: \(inError)")
+					debugLog("Error: \(String(describing: inError))")
 					return
 				}
 				
 				debugLog("URL: \(url.path)")
+				self.document.importFile(url: url)
 			}
 			debugLog("drop: \(p)")
 			return true
@@ -56,6 +57,31 @@ ProjectWindowContentView: View
     
     var shouldDisplayHover: Bool		=	false
 }
+
+struct
+LayerItemCell: View
+{
+	let			layer:		Layer
+	
+	var body: some View {
+		let s = HStack {
+			Text(self.layer.name ?? "New Layer")		//	TODO: What do we do if the layer has no name?
+				.lineLimit(1)
+				.font(.headline)
+			Spacer()
+			Image(systemName: "eye")
+		}
+		if let url = self.layer.url
+		{
+			s.help(url.path)
+		}
+		else
+		{
+			s
+		}
+	}
+}
+
 
 struct
 LayerDetail: View
@@ -84,20 +110,6 @@ LayerDetail: View
 		}
 		.background(Color("layer-background"))
 		.frame(minWidth: 100.0, idealWidth: 1600.0, minHeight: 100.0, idealHeight: 800.0)		//	TODO: Make default size relative to screen size
-	}
-}
-
-struct
-LayerItemCell: View
-{
-	var body: some View {
-		HStack {
-			Text("Mars MOLA DEMasdf df asd fsdf")
-				.lineLimit(1)
-				.font(.headline)
-			Spacer()
-			Image(systemName: "eye")
-		}
 	}
 }
 

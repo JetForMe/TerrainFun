@@ -16,10 +16,17 @@ Layer : ObservableObject, Identifiable
 {
 				var			id						:	UUID			=	UUID()
 	@Published	var			name					:	String?
+	@Published	var			url						:	URL?
 	@Published	var			visible					:	Bool			=	true			//	TODO: Perhaps this should be a property of the view. But it should be persisted, and that could get messy.
 }
 
 class
 DEMLayer : Layer
 {
+	init(url inURL: URL)
+	{
+		super.init()
+		self.url = inURL
+		self.name = inURL.deletingPathExtension().lastPathComponent
+	}
 }
