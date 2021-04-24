@@ -111,14 +111,14 @@ LayerDetail: View
 				}}()
 				
 				image
-					.trackingMouse({ inPoint in
+					.resizable()
+					.border(Color.red)
+					.aspectRatio(contentMode: .fit)
+					.trackingMouse(onMove: { inPoint in
 						self.local = inPoint
 						let scale = self.layer.sourceSize! / geo.size
 						self.cursorPosition = scale * inPoint
 					})
-					.resizable()
-					.border(Color.red)
-					.aspectRatio(contentMode: .fit)
 					.highPriorityGesture(DragGesture(minimumDistance: 1, coordinateSpace: .global)
 										.onChanged { _ in
 	//					                    debugLog("loc: \($0.location)")
