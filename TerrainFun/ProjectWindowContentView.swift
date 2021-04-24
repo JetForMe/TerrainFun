@@ -26,7 +26,7 @@ ProjectWindowContentView: View
     var body: some View
     {
 		NavigationView {
-			List([DEMLayer()]) { layer in
+			List(self.document.layers) { layer in
 				NavigationLink(destination: LayerDetail(layer: layer)) {
 					LayerItemCell()
 				}
