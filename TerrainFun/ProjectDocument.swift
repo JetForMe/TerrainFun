@@ -22,30 +22,38 @@ UTType
 	static let project						=	UTType(exportedAs: "com.latencyzero.TerrainFun.project")
 }
 
-struct
-ProjectDocument : FileDocument
+class
+ProjectDocument : ReferenceFileDocument
 {
-	var text: String
-
-	init(text: String = "Hello, world!") {
-		self.text = text
-	}
-
-	static var readableContentTypes: [UTType] { [.project] }
-
-	init(configuration: ReadConfiguration) throws {
-		guard let data = configuration.file.regularFileContents,
-			  let string = String(data: data, encoding: .utf8)
-		else {
-			throw CocoaError(.fileReadCorruptFile)
-		}
-		text = string
+	typealias Snapshot = [Layer]
+	
+	init()
+	{
 	}
 	
-	func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
-		let data = text.data(using: .utf8)!
+	required
+	init(configuration: ReadConfiguration)
+		throws
+	{
+	}
+	
+	func
+	snapshot(contentType: UTType)
+		throws
+		-> [Layer]
+	{
+		return self.layers
+	}
+	
+	func
+	fileWrapper(snapshot: [Layer], configuration: WriteConfiguration)
+		throws
+		-> FileWrapper
+	{
+		let data = Data()
 		return .init(regularFileWithContents: data)
 	}
+	
 	
 	func
 	importFile()
@@ -55,7 +63,10 @@ ProjectDocument : FileDocument
 //		let ci = CIImage(imageProvider: ip, size: 0, 0, format: .L16, colorSpace: nil, options: [.providerTileSize : [ 128, 128 ]])
 	}
 	
-	var				layers			:	[Layer] = [Layer]()
+	@Published	var				layers						:	[Layer]					=	[Layer]()
+
+
+	static		var				readableContentTypes		:	[UTType]				{ [.project] }
 }
 
 

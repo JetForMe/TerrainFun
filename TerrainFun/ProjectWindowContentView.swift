@@ -18,12 +18,12 @@ import SwiftUI
 struct
 ProjectWindowContentView: View
 {
-    @Binding			var		document				:	ProjectDocument
+    @ObservedObject		var		document				:	ProjectDocument
 	@State				var		dropTargeted			:	Bool = false
 						
     var body: some View {
 		NavigationView {
-			List(self.document.layers) { layer in
+			List(0 ..< 5) { layer in
 				NavigationLink(destination: LayerDetail()) {
 					HStack {
 						Text("Mars MOLA DEM")
@@ -51,7 +51,7 @@ ProjectWindowContentView_Previews: PreviewProvider
     static
     var previews: some View
     {
-		ProjectWindowContentView(document: .constant(ProjectDocument()))
+		ProjectWindowContentView(document: ProjectDocument())
 			
     }
 }

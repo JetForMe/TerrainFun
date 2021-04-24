@@ -20,9 +20,10 @@ TerrainFunApp: App
 	var
 	body: some Scene
 	{
-		DocumentGroup(newDocument: ProjectDocument())
-		{ inFile in
-			ProjectWindowContentView(document: inFile.$document)
+		DocumentGroup(newDocument: ProjectDocument.init)
+		{ inGroup in
+			ProjectWindowContentView(document: inGroup.document)
+				.frame(width: 1800, height: 800)
 		}
 		.commands
 		{
