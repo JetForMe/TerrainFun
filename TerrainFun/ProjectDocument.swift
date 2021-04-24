@@ -85,6 +85,10 @@ ProjectDocument : ReferenceFileDocument
 			return
 		}
 		
+		let originalWidth = ds.xSize
+		let originalHeight = ds.ySize
+		newLayer.sourceSize = CGSize(width: CGFloat(originalWidth), height: CGFloat(originalHeight))
+		
 		let workingImage = image(ofMaximumSize: CGSize(width: 2048, height: 2048), from: ds)
 		newLayer.workingImage = workingImage
 	}

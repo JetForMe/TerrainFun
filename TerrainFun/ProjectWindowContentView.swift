@@ -87,6 +87,7 @@ struct
 LayerDetail: View
 {
 						let		layer					:	Layer
+	@State		private	var		local					:	CGPoint			=	.zero
 	@State		private	var		cursorPosition			:	CGPoint			=	.zero
 	@State		private	var		imageScale				:	CGPoint			=	CGPoint(x: 1.0, y: 1.0)
 	
@@ -98,42 +99,55 @@ LayerDetail: View
 			
 			//	Get the image scaled for our current image size…
 			
-			let image: Image = {
-			if let wi = self.layer.workingImage
-			{
-				return  Image(nsImage: NSImage(cgImage: wi, size: .zero))
-			}
-			else
-			{
-				return Image("questionmark.square.dashed")
-			}}()
-			
-			image.resizable()
-				.trackingMouse { inPoint in
-					self.cursorPosition = inPoint
+			GeometryReader { geo in
+				let image: Image = {
+				if let wi = self.layer.workingImage
+				{
+					return  Image(nsImage: NSImage(cgImage: wi, size: .zero))
 				}
-				.aspectRatio(contentMode: .fit)
-				.highPriorityGesture(DragGesture(minimumDistance: 1, coordinateSpace: .global)
-									.onChanged { _ in
-//					                    debugLog("loc: \($0.location)")
-									})
-			//				}
+				else
+				{
+					return Image("questionmark.square.dashed")
+				}}()
+				
+				image
+					.trackingMouse({ inPoint in
+						self.local = inPoint
+						let scale = self.layer.sourceSize! / geo.size
+						self.cursorPosition = scale * inPoint
+					})
+					.resizable()
+					.border(Color.red)
+					.aspectRatio(contentMode: .fit)
+					.highPriorityGesture(DragGesture(minimumDistance: 1, coordinateSpace: .global)
+										.onChanged { _ in
+	//					                    debugLog("loc: \($0.location)")
+										})
+				//				}
+			}
+			
 			Spacer()
 			let g = self.layer.projection!.geodetic(from: self.cursorPosition)
-			LayerInfoBar(cursorPosition: self.cursorPosition, geodeticPosition: g)
+			LayerInfoBar(local: self.local, cursorPosition: self.cursorPosition, geodeticPosition: g)
 		}
+		.border(Color.blue)
 		.background(Color("layer-background"))
 		.frame(minWidth: 100.0, idealWidth: 1600.0, minHeight: 100.0, idealHeight: 800.0)		//	TODO: Make default size relative to screen size
 	}
 }
 
 struct LayerInfoBar: View {
+	let		local				:	CGPoint
 	let		cursorPosition			:	CGPoint
 	let		geodeticPosition		:	CLLocationCoordinate2D
 	
 	var body: some View {
 		HStack
 		{
+			Text("Xl: \(self.local.x, specifier: "%0.f")")
+				.frame(minWidth: 100, alignment: .leading)
+			Text("Yl: \(self.local.y, specifier: "%0.f")")
+				.frame(minWidth: 100, alignment: .leading)
 			Text("X: \(self.cursorPosition.x, specifier: "%0.f")")
 				.frame(minWidth: 100, alignment: .leading)
 			Text("Y: \(self.cursorPosition.y, specifier: "%0.f")")
@@ -161,4 +175,22 @@ ProjectWindowContentView_Previews: PreviewProvider
 			
     }
 }
+
+extension CGSize
+{
+	static
+	func /(lhs: CGSize, rhs: CGSize)
+		-> CGSize
+	{
+		return CGSize(width: lhs.width / rhs.width, height: lhs.height / rhs.height)
+	}
+	
+	static
+	func *(lhs: CGSize, rhs: CGPoint)
+		-> CGPoint
+	{
+		return CGPoint(x: lhs.width * rhs.x, y: lhs.height * rhs.y)
+	}
+}
+
 

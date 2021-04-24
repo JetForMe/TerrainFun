@@ -20,6 +20,7 @@ Layer : ObservableObject, Identifiable
 	@Published	var			url						:	URL?
 	@Published	var			visible					:	Bool			=	true			//	TODO: Perhaps this should be a property of the view. But it should be persisted, and that could get messy.
 	@Published	var			projection				:	Projection?
+	@Published	var			sourceSize				:	CGSize?
 	@Published	var			workingImage			:	CGImage?
 }
 
