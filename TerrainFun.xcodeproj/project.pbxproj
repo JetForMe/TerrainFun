@@ -11,7 +11,6 @@
 		C62A978C2636E98100B49566 /* UnknownLayerDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = C62A978B2636E98100B49566 /* UnknownLayerDetail.swift */; };
 		C62A978E2636EA6800B49566 /* DEMLayerDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = C62A978D2636EA6800B49566 /* DEMLayerDetail.swift */; };
 		C631C7C32636B08800E1AF4E /* PerlinTerrainGeneratorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C631C7C22636B08800E1AF4E /* PerlinTerrainGeneratorView.swift */; };
-		C631C7C62636B1AE00E1AF4E /* SceneKitAssets.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = C631C7C52636B1AE00E1AF4E /* SceneKitAssets.scnassets */; };
 		C631C7C82636C1CD00E1AF4E /* MulitAxisDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = C631C7C72636C1CD00E1AF4E /* MulitAxisDevice.swift */; };
 		C631C7CB2636C57800E1AF4E /* HIDManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C631C7CA2636C57800E1AF4E /* HIDManager.swift */; };
 		C6864912262468F800035B75 /* TerrainFunApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6864911262468F800035B75 /* TerrainFunApp.swift */; };
@@ -110,7 +109,6 @@
 		C62A978B2636E98100B49566 /* UnknownLayerDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnknownLayerDetail.swift; sourceTree = "<group>"; };
 		C62A978D2636EA6800B49566 /* DEMLayerDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DEMLayerDetail.swift; sourceTree = "<group>"; };
 		C631C7C22636B08800E1AF4E /* PerlinTerrainGeneratorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerlinTerrainGeneratorView.swift; sourceTree = "<group>"; };
-		C631C7C52636B1AE00E1AF4E /* SceneKitAssets.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = SceneKitAssets.scnassets; sourceTree = "<group>"; };
 		C631C7C72636C1CD00E1AF4E /* MulitAxisDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MulitAxisDevice.swift; sourceTree = "<group>"; };
 		C631C7CA2636C57800E1AF4E /* HIDManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HIDManager.swift; sourceTree = "<group>"; };
 		C63CF7AC257F559200A66A3E /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
@@ -193,11 +191,18 @@
 			path = DEMLayerDetail;
 			sourceTree = "<group>";
 		};
-		C631C7C42636B18600E1AF4E /* TerrainGenerator */ = {
+		C62A97902636EB2C00B49566 /* TerrainGeneratorLayerDetail */ = {
 			isa = PBXGroup;
 			children = (
 				C631C7C22636B08800E1AF4E /* PerlinTerrainGeneratorView.swift */,
-				C631C7C52636B1AE00E1AF4E /* SceneKitAssets.scnassets */,
+				C62A97892636E94700B49566 /* TerrainGeneratorLayerDetail.swift */,
+			);
+			path = TerrainGeneratorLayerDetail;
+			sourceTree = "<group>";
+		};
+		C631C7C42636B18600E1AF4E /* TerrainGenerator */ = {
+			isa = PBXGroup;
+			children = (
 			);
 			path = TerrainGenerator;
 			sourceTree = "<group>";
@@ -261,7 +266,7 @@
 				C6864937262579B800035B75 /* ProjectDocument.swift */,
 				C68649192624693200035B75 /* ProjectWindowContentView.swift */,
 				C62A978F2636EABF00B49566 /* DEMLayerDetail */,
-				C62A97892636E94700B49566 /* TerrainGeneratorLayerDetail.swift */,
+				C62A97902636EB2C00B49566 /* TerrainGeneratorLayerDetail */,
 				C62A978B2636E98100B49566 /* UnknownLayerDetail.swift */,
 				C6AE5DEA24C97AE4000EDC78 /* Utils.swift */,
 				C68649D7262EDF0600035B75 /* InstrumentationUtilities.swift */,
@@ -427,7 +432,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C631C7C62636B1AE00E1AF4E /* SceneKitAssets.scnassets in Resources */,
 				C6AE5D7024C94F6A000EDC78 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
