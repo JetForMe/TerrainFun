@@ -35,8 +35,8 @@ ProjectWindowContentView: View
 						LayerItemCell(layer: inLayer)
 					}
 				}
-					.frame(minWidth: 200.0)
-					.border(Color.blue, width: self.dropTargeted ? 2 : 0)
+				.frame(minWidth: 200.0)
+				.border(Color.blue, width: self.dropTargeted ? 2 : 0)
 				
 				//	Controls for adding and removing layers…
 				
@@ -47,8 +47,8 @@ ProjectWindowContentView: View
 					Button(action: {}) { Image(systemName: "minus") }.buttonStyle(PlainButtonStyle()).frame(width: 28.0, height: 28.0)
 					Spacer()
 				}
-					.frame(minWidth: 0.0, alignment: .leading)
-					.background(Color("status-bar-background"))
+				.frame(minWidth: 0.0, alignment: .leading)
+				.background(Color("status-bar-background"))
 			}
 		}
 		.navigationViewStyle(DoubleColumnNavigationViewStyle())
@@ -80,7 +80,9 @@ LayerItemCell: View
 {
 	let			layer:		Layer
 	
-	var body: some View {
+	var
+	body: some View
+	{
 		let s = HStack {
 			Text(self.layer.name ?? "New Layer")		//	TODO: What do we do if the layer has no name?
 				.lineLimit(1)
@@ -108,39 +110,23 @@ LayerDetail: View
 	@State		private	var		cursorPosition			:	CGPoint			=	.zero
 	@State		private	var		imageScale				:	CGPoint			=	CGPoint(x: 1.0, y: 1.0)
 	
-	var body: some View {
+	var
+	body: some View
+	{
 		VStack {
 			Spacer()
 			
-			//				ScrollView {
-			
-			//	Get the image scaled for our current image size…
-			
-			GeometryReader { geo in
-				let image: Image = {
-				if let wi = self.layer.workingImage
-				{
-					return  Image(nsImage: NSImage(cgImage: wi, size: .zero))
-				}
-				else
-				{
-					return Image("questionmark.square.dashed")
-				}}()
-				
-				image
-					.resizable()
-					.border(Color.red)
-					.aspectRatio(contentMode: .fit)
-					.trackingMouse(onMove: { inPoint in
-						self.local = inPoint
-						let scale = self.layer.sourceSize! / geo.size
-						self.cursorPosition = scale * inPoint
-					})
-					.highPriorityGesture(DragGesture(minimumDistance: 1, coordinateSpace: .global)
-										.onChanged { _ in
-	//					                    debugLog("loc: \($0.location)")
-										})
-				//				}
+			if self.layer is DEMLayer
+			{
+				DEMLayerDetail(layer: self.layer, local: self.$local, cursorPosition: self.$cursorPosition)
+			}
+			else if self.layer is TerrainGeneratorLayer
+			{
+				TerrainGeneratorLayerDetail()
+			}
+			else
+			{
+				UnknownLayerDetail()
 			}
 			
 			Spacer()
@@ -150,6 +136,47 @@ LayerDetail: View
 		.border(Color.blue)
 		.background(Color("layer-background"))
 		.frame(minWidth: 100.0, idealWidth: 1600.0, minHeight: 100.0, idealHeight: 800.0)		//	TODO: Make default size relative to screen size
+	}
+}
+
+struct
+DEMLayerDetail: View
+{
+						let		layer					:	Layer
+	@Binding			var		local					:	CGPoint		//	TODO: I don't really like this binding shit here, but tracking is super broken anyway. I think we can handle tracking outside of these detail views
+	@Binding			var		cursorPosition			:	CGPoint
+						
+	var body: some View {
+		//				ScrollView {
+		
+		//	Get the image scaled for our current image size…
+		
+		GeometryReader { geo in
+			let image: Image = {
+			if let wi = self.layer.workingImage
+			{
+				return  Image(nsImage: NSImage(cgImage: wi, size: .zero))
+			}
+			else
+			{
+				return Image("questionmark.square.dashed")
+			}}()
+			
+			image
+				.resizable()
+				.border(Color.red)
+				.aspectRatio(contentMode: .fit)
+				.trackingMouse(onMove: { inPoint in
+					self.local = inPoint
+					let scale = self.layer.sourceSize! / geo.size
+					self.cursorPosition = scale * inPoint
+				})
+				.highPriorityGesture(DragGesture(minimumDistance: 1, coordinateSpace: .global)
+									.onChanged { _ in
+//					                    debugLog("loc: \($0.location)")
+									})
+			//				}
+		}
 	}
 }
 

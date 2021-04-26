@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C62A978A2636E94700B49566 /* TerrainGeneratorLayerDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = C62A97892636E94700B49566 /* TerrainGeneratorLayerDetail.swift */; };
+		C62A978C2636E98100B49566 /* UnknownLayerDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = C62A978B2636E98100B49566 /* UnknownLayerDetail.swift */; };
 		C631C7C32636B08800E1AF4E /* PerlinTerrainGeneratorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C631C7C22636B08800E1AF4E /* PerlinTerrainGeneratorView.swift */; };
 		C631C7C62636B1AE00E1AF4E /* SceneKitAssets.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = C631C7C52636B1AE00E1AF4E /* SceneKitAssets.scnassets */; };
 		C631C7C82636C1CD00E1AF4E /* MulitAxisDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = C631C7C72636C1CD00E1AF4E /* MulitAxisDevice.swift */; };
@@ -103,6 +105,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C62A97892636E94700B49566 /* TerrainGeneratorLayerDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerrainGeneratorLayerDetail.swift; sourceTree = "<group>"; };
+		C62A978B2636E98100B49566 /* UnknownLayerDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnknownLayerDetail.swift; sourceTree = "<group>"; };
 		C631C7C22636B08800E1AF4E /* PerlinTerrainGeneratorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerlinTerrainGeneratorView.swift; sourceTree = "<group>"; };
 		C631C7C52636B1AE00E1AF4E /* SceneKitAssets.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = SceneKitAssets.scnassets; sourceTree = "<group>"; };
 		C631C7C72636C1CD00E1AF4E /* MulitAxisDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MulitAxisDevice.swift; sourceTree = "<group>"; };
@@ -239,6 +243,8 @@
 				C6864911262468F800035B75 /* TerrainFunApp.swift */,
 				C6864937262579B800035B75 /* ProjectDocument.swift */,
 				C68649192624693200035B75 /* ProjectWindowContentView.swift */,
+				C62A97892636E94700B49566 /* TerrainGeneratorLayerDetail.swift */,
+				C62A978B2636E98100B49566 /* UnknownLayerDetail.swift */,
 				C6AE5DEA24C97AE4000EDC78 /* Utils.swift */,
 				C6CAB72D24D152C500136F90 /* BinaryReader.swift */,
 				C6864955262706C600035B75 /* BinaryFileReader.swift */,
@@ -438,12 +444,14 @@
 			files = (
 				C686492E26247F4400035B75 /* ViewController.swift in Sources */,
 				C6864956262706C600035B75 /* BinaryFileReader.swift in Sources */,
+				C62A978C2636E98100B49566 /* UnknownLayerDetail.swift in Sources */,
 				C68649E8262EEFBE00035B75 /* HeightShader.ci.metal in Sources */,
 				C68649D0262ECD8F00035B75 /* GDALImageProvider.swift in Sources */,
 				C6CAB72E24D152C500136F90 /* BinaryReader.swift in Sources */,
 				C6EAFFD32632548300EFE402 /* TrackingArea.swift in Sources */,
 				C631C7C32636B08800E1AF4E /* PerlinTerrainGeneratorView.swift in Sources */,
 				C6864912262468F800035B75 /* TerrainFunApp.swift in Sources */,
+				C62A978A2636E94700B49566 /* TerrainGeneratorLayerDetail.swift in Sources */,
 				C631C7C82636C1CD00E1AF4E /* MulitAxisDevice.swift in Sources */,
 				C68649D8262EDF0600035B75 /* InstrumentationUtilities.swift in Sources */,
 				C6EAFFD626327B9100EFE402 /* Layer.swift in Sources */,
