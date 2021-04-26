@@ -133,6 +133,13 @@ ProjectDocument : ReferenceFileDocument
 		return image
 	}
 	
+	func
+	addTerrainGeneratorLayer()
+	{
+		let newLayer = TerrainGeneratorLayer()
+		self.layers.append(newLayer)
+	}
+	
 	@Published	var				layers						:	[Layer]					=	[Layer]()
 
 

@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C631C7C32636B08800E1AF4E /* PerlinTerrainGeneratorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C631C7C22636B08800E1AF4E /* PerlinTerrainGeneratorView.swift */; };
+		C631C7C62636B1AE00E1AF4E /* SceneKitAssets.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = C631C7C52636B1AE00E1AF4E /* SceneKitAssets.scnassets */; };
+		C631C7C82636C1CD00E1AF4E /* MulitAxisDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = C631C7C72636C1CD00E1AF4E /* MulitAxisDevice.swift */; };
+		C631C7CB2636C57800E1AF4E /* HIDManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C631C7CA2636C57800E1AF4E /* HIDManager.swift */; };
 		C6864912262468F800035B75 /* TerrainFunApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6864911262468F800035B75 /* TerrainFunApp.swift */; };
 		C686491A2624693200035B75 /* ProjectWindowContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C68649192624693200035B75 /* ProjectWindowContentView.swift */; };
 		C686492E26247F4400035B75 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5D6B24C94F68000EDC78 /* ViewController.swift */; };
@@ -99,6 +103,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C631C7C22636B08800E1AF4E /* PerlinTerrainGeneratorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerlinTerrainGeneratorView.swift; sourceTree = "<group>"; };
+		C631C7C52636B1AE00E1AF4E /* SceneKitAssets.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = SceneKitAssets.scnassets; sourceTree = "<group>"; };
+		C631C7C72636C1CD00E1AF4E /* MulitAxisDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MulitAxisDevice.swift; sourceTree = "<group>"; };
+		C631C7CA2636C57800E1AF4E /* HIDManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HIDManager.swift; sourceTree = "<group>"; };
 		C63CF7AC257F559200A66A3E /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
 		C6521C3724D2D2AE004128B6 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		C6864911262468F800035B75 /* TerrainFunApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TerrainFunApp.swift; sourceTree = "<group>"; };
@@ -164,6 +172,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C631C7C42636B18600E1AF4E /* TerrainGenerator */ = {
+			isa = PBXGroup;
+			children = (
+				C631C7C22636B08800E1AF4E /* PerlinTerrainGeneratorView.swift */,
+				C631C7C52636B1AE00E1AF4E /* SceneKitAssets.scnassets */,
+			);
+			path = TerrainGenerator;
+			sourceTree = "<group>";
+		};
+		C631C7C92636C56A00E1AF4E /* InputDeviceSupport */ = {
+			isa = PBXGroup;
+			children = (
+				C631C7CA2636C57800E1AF4E /* HIDManager.swift */,
+				C631C7C72636C1CD00E1AF4E /* MulitAxisDevice.swift */,
+			);
+			path = InputDeviceSupport;
+			sourceTree = "<group>";
+		};
 		C63CF7A3257F54FA00A66A3E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -209,6 +235,7 @@
 		C6AE5D6824C94F68000EDC78 /* TerrainFun */ = {
 			isa = PBXGroup;
 			children = (
+				C631C7C42636B18600E1AF4E /* TerrainGenerator */,
 				C6864911262468F800035B75 /* TerrainFunApp.swift */,
 				C6864937262579B800035B75 /* ProjectDocument.swift */,
 				C68649192624693200035B75 /* ProjectWindowContentView.swift */,
@@ -222,6 +249,7 @@
 				C68649DF262EED2D00035B75 /* HeightShader.swift */,
 				C68649E7262EEFBE00035B75 /* HeightShader.ci.metal */,
 				C68649EB262FF69A00035B75 /* Data.swift */,
+				C631C7C92636C56A00E1AF4E /* InputDeviceSupport */,
 				C6EAFFD22632548300EFE402 /* TrackingArea.swift */,
 				C6EAFFD426327B7500EFE402 /* Model */,
 				C6EAFFD72634733400EFE402 /* Old Code */,
@@ -382,6 +410,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C631C7C62636B1AE00E1AF4E /* SceneKitAssets.scnassets in Resources */,
 				C6AE5D7024C94F6A000EDC78 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -413,7 +442,9 @@
 				C68649D0262ECD8F00035B75 /* GDALImageProvider.swift in Sources */,
 				C6CAB72E24D152C500136F90 /* BinaryReader.swift in Sources */,
 				C6EAFFD32632548300EFE402 /* TrackingArea.swift in Sources */,
+				C631C7C32636B08800E1AF4E /* PerlinTerrainGeneratorView.swift in Sources */,
 				C6864912262468F800035B75 /* TerrainFunApp.swift in Sources */,
+				C631C7C82636C1CD00E1AF4E /* MulitAxisDevice.swift in Sources */,
 				C68649D8262EDF0600035B75 /* InstrumentationUtilities.swift in Sources */,
 				C6EAFFD626327B9100EFE402 /* Layer.swift in Sources */,
 				C6864938262579B900035B75 /* ProjectDocument.swift in Sources */,
@@ -426,6 +457,7 @@
 				C686492F26247F4400035B75 /* Document.swift in Sources */,
 				C686493426247F4B00035B75 /* AppDelegate.swift in Sources */,
 				C6CAB73024D1596800136F90 /* TIFFImage.swift in Sources */,
+				C631C7CB2636C57800E1AF4E /* HIDManager.swift in Sources */,
 				C68649CC262EADB100035B75 /* GDALDataset.swift in Sources */,
 				C68649B4262EA68800035B75 /* GDAL.swift in Sources */,
 				C68649E0262EED2D00035B75 /* HeightShader.swift in Sources */,

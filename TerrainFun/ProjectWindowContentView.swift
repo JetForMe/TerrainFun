@@ -26,13 +26,30 @@ ProjectWindowContentView: View
     var body: some View
     {
 		NavigationView {
-			List(self.document.layers) { inLayer in
-				NavigationLink(destination: LayerDetail(layer: inLayer)) {
-					LayerItemCell(layer: inLayer)
+			VStack
+			{
+				//	The list of layers…
+				
+				List(self.document.layers) { inLayer in
+					NavigationLink(destination: LayerDetail(layer: inLayer)) {
+						LayerItemCell(layer: inLayer)
+					}
 				}
+					.frame(minWidth: 200.0)
+					.border(Color.blue, width: self.dropTargeted ? 2 : 0)
+				
+				//	Controls for adding and removing layers…
+				
+				Divider()
+				HStack(spacing: 0)
+				{
+					Button(action: {}) { Image(systemName: "plus") }.buttonStyle(PlainButtonStyle()).frame(width: 28.0, height: 28.0)
+					Button(action: {}) { Image(systemName: "minus") }.buttonStyle(PlainButtonStyle()).frame(width: 28.0, height: 28.0)
+					Spacer()
+				}
+					.frame(minWidth: 0.0, alignment: .leading)
+					.background(Color("status-bar-background"))
 			}
-			.frame(minWidth: 200.0)
-			.border(Color.blue, width: self.dropTargeted ? 2 : 0)
 		}
 		.navigationViewStyle(DoubleColumnNavigationViewStyle())
 		.onDrop(of: [.fileURL], isTargeted: self.$dropTargeted, perform: { inProviders in

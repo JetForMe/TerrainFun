@@ -36,6 +36,18 @@ DEMLayer : Layer
 	}
 }
 
+class
+TerrainGeneratorLayer : Layer
+{
+	override
+	init()
+	{
+		super.init()
+		self.name = "Terrain Generator"
+		self.projection = Mars2000()
+	}
+}
+
 protocol
 Projection
 {

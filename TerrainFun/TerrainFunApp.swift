@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-//import GDAL
+import Combine
 
 
 
@@ -18,9 +18,6 @@ TerrainFunApp: App
 	init()
 	{
 		GDAL.allRegister()
-		
-		let tdp = URL(fileURLWithPath: Bundle.main.infoDictionary?["TestDataDirectory"] as! String)
-		debugLog("Path: \(tdp.path)")
 	}
 	
 	var
@@ -30,9 +27,19 @@ TerrainFunApp: App
 		{ inGroup in
 			ProjectWindowContentView(document: inGroup.document)
 				.frame(minWidth: 301.0, minHeight: 100.0)
+				.onReceive(self.addTerrainGeneratorLayerCommand) { _ in
+					inGroup.document.addTerrainGeneratorLayer()
+				}
 		}
 		.commands
 		{
+			CommandMenu("Layers")
+			{
+				Button("Add Terrain Generator Layer")
+				{
+					self.addTerrainGeneratorLayerCommand.send()
+				}
+			}
 			CommandMenu("Tests")
 			{
 				Button("Test CIImageProvider")
@@ -73,6 +80,9 @@ TerrainFunApp: App
 		let destURL = URL(fileURLWithPath: "/Users/rmann/Downloads/TestImage.png")
 		writeCGImage(image!, to: destURL)
 	}
+	
+	
+	private	let			addTerrainGeneratorLayerCommand			=	PassthroughSubject<Void, Never>()
 }
 
 @discardableResult func writeCGImage(_ image: CGImage, to destinationURL: URL) -> Bool {

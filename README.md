@@ -53,6 +53,11 @@ SRTM: https://www.usgs.gov/centers/eros/science/usgs-eros-archive-digital-elevat
 
 https://alastaira.wordpress.com/2013/11/12/importing-dem-terrain-heightmaps-for-unity-using-gdal/
 
+## Notes
+
+### SceneKit
+
+* A basic scene puts the camera on the positive z-axis looking toward the origin, with the x-axis to the right, and the y-axis up.
 
 ---
 

@@ -34,7 +34,7 @@ TerrainEditorScene: SCNScene
 		
 		//	Debugging axes…
 		
-		let axes = setupCoordinateAxes()
+		let axes = Self.setupCoordinateAxes()
 		self.rootNode.addChildNode(axes)
 
 		//	Temp geometry…
@@ -46,6 +46,7 @@ TerrainEditorScene: SCNScene
 		
 	}
 
+	static
 	func
 	setupCoordinateAxes()
 		-> SCNNode
