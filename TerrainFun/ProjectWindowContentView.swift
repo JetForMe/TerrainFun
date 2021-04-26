@@ -139,47 +139,6 @@ LayerDetail: View
 	}
 }
 
-struct
-DEMLayerDetail: View
-{
-						let		layer					:	Layer
-	@Binding			var		local					:	CGPoint		//	TODO: I don't really like this binding shit here, but tracking is super broken anyway. I think we can handle tracking outside of these detail views
-	@Binding			var		cursorPosition			:	CGPoint
-						
-	var body: some View {
-		//				ScrollView {
-		
-		//	Get the image scaled for our current image size…
-		
-		GeometryReader { geo in
-			let image: Image = {
-			if let wi = self.layer.workingImage
-			{
-				return  Image(nsImage: NSImage(cgImage: wi, size: .zero))
-			}
-			else
-			{
-				return Image("questionmark.square.dashed")
-			}}()
-			
-			image
-				.resizable()
-				.border(Color.red)
-				.aspectRatio(contentMode: .fit)
-				.trackingMouse(onMove: { inPoint in
-					self.local = inPoint
-					let scale = self.layer.sourceSize! / geo.size
-					self.cursorPosition = scale * inPoint
-				})
-				.highPriorityGesture(DragGesture(minimumDistance: 1, coordinateSpace: .global)
-									.onChanged { _ in
-//					                    debugLog("loc: \($0.location)")
-									})
-			//				}
-		}
-	}
-}
-
 struct LayerInfoBar: View {
 	let		local				:	CGPoint
 	let		cursorPosition			:	CGPoint
@@ -219,22 +178,4 @@ ProjectWindowContentView_Previews: PreviewProvider
 			
     }
 }
-
-extension CGSize
-{
-	static
-	func /(lhs: CGSize, rhs: CGSize)
-		-> CGSize
-	{
-		return CGSize(width: lhs.width / rhs.width, height: lhs.height / rhs.height)
-	}
-	
-	static
-	func *(lhs: CGSize, rhs: CGPoint)
-		-> CGPoint
-	{
-		return CGPoint(x: lhs.width * rhs.x, y: lhs.height * rhs.y)
-	}
-}
-
 

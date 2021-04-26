@@ -7,8 +7,8 @@
 //
 
 
+import CoreGraphics
 import Foundation
-
 
 extension Double
 {
@@ -61,3 +61,24 @@ debugLog(format inFormat: String, file inFile : String = #file, line inLine : In
 	let s = String(format: inFormat, arguments: inArgs)
 	debugLog(s, file: inFile, line: inLine)
 }
+
+
+
+extension CGSize
+{
+	static
+	func /(lhs: CGSize, rhs: CGSize)
+		-> CGSize
+	{
+		return CGSize(width: lhs.width / rhs.width, height: lhs.height / rhs.height)
+	}
+	
+	static
+	func *(lhs: CGSize, rhs: CGPoint)
+		-> CGPoint
+	{
+		return CGPoint(x: lhs.width * rhs.x, y: lhs.height * rhs.y)
+	}
+}
+
+

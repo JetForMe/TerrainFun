@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		C62A978A2636E94700B49566 /* TerrainGeneratorLayerDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = C62A97892636E94700B49566 /* TerrainGeneratorLayerDetail.swift */; };
 		C62A978C2636E98100B49566 /* UnknownLayerDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = C62A978B2636E98100B49566 /* UnknownLayerDetail.swift */; };
+		C62A978E2636EA6800B49566 /* DEMLayerDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = C62A978D2636EA6800B49566 /* DEMLayerDetail.swift */; };
 		C631C7C32636B08800E1AF4E /* PerlinTerrainGeneratorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C631C7C22636B08800E1AF4E /* PerlinTerrainGeneratorView.swift */; };
 		C631C7C62636B1AE00E1AF4E /* SceneKitAssets.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = C631C7C52636B1AE00E1AF4E /* SceneKitAssets.scnassets */; };
 		C631C7C82636C1CD00E1AF4E /* MulitAxisDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = C631C7C72636C1CD00E1AF4E /* MulitAxisDevice.swift */; };
@@ -107,6 +108,7 @@
 /* Begin PBXFileReference section */
 		C62A97892636E94700B49566 /* TerrainGeneratorLayerDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerrainGeneratorLayerDetail.swift; sourceTree = "<group>"; };
 		C62A978B2636E98100B49566 /* UnknownLayerDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnknownLayerDetail.swift; sourceTree = "<group>"; };
+		C62A978D2636EA6800B49566 /* DEMLayerDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DEMLayerDetail.swift; sourceTree = "<group>"; };
 		C631C7C22636B08800E1AF4E /* PerlinTerrainGeneratorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerlinTerrainGeneratorView.swift; sourceTree = "<group>"; };
 		C631C7C52636B1AE00E1AF4E /* SceneKitAssets.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = SceneKitAssets.scnassets; sourceTree = "<group>"; };
 		C631C7C72636C1CD00E1AF4E /* MulitAxisDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MulitAxisDevice.swift; sourceTree = "<group>"; };
@@ -176,6 +178,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C62A978F2636EABF00B49566 /* DEMLayerDetail */ = {
+			isa = PBXGroup;
+			children = (
+				C6CAB72D24D152C500136F90 /* BinaryReader.swift */,
+				C6864955262706C600035B75 /* BinaryFileReader.swift */,
+				C68649D3262ECDA200035B75 /* CIImageProvider.swift */,
+				C62A978D2636EA6800B49566 /* DEMLayerDetail.swift */,
+				C68649CF262ECD8F00035B75 /* GDALImageProvider.swift */,
+				C68649E7262EEFBE00035B75 /* HeightShader.ci.metal */,
+				C68649DF262EED2D00035B75 /* HeightShader.swift */,
+				C6CAB72F24D1596800136F90 /* TIFFImage.swift */,
+			);
+			path = DEMLayerDetail;
+			sourceTree = "<group>";
+		};
 		C631C7C42636B18600E1AF4E /* TerrainGenerator */ = {
 			isa = PBXGroup;
 			children = (
@@ -243,21 +260,15 @@
 				C6864911262468F800035B75 /* TerrainFunApp.swift */,
 				C6864937262579B800035B75 /* ProjectDocument.swift */,
 				C68649192624693200035B75 /* ProjectWindowContentView.swift */,
+				C62A978F2636EABF00B49566 /* DEMLayerDetail */,
 				C62A97892636E94700B49566 /* TerrainGeneratorLayerDetail.swift */,
 				C62A978B2636E98100B49566 /* UnknownLayerDetail.swift */,
 				C6AE5DEA24C97AE4000EDC78 /* Utils.swift */,
-				C6CAB72D24D152C500136F90 /* BinaryReader.swift */,
-				C6864955262706C600035B75 /* BinaryFileReader.swift */,
-				C6CAB72F24D1596800136F90 /* TIFFImage.swift */,
-				C68649CF262ECD8F00035B75 /* GDALImageProvider.swift */,
-				C68649D3262ECDA200035B75 /* CIImageProvider.swift */,
 				C68649D7262EDF0600035B75 /* InstrumentationUtilities.swift */,
-				C68649DF262EED2D00035B75 /* HeightShader.swift */,
-				C68649E7262EEFBE00035B75 /* HeightShader.ci.metal */,
 				C68649EB262FF69A00035B75 /* Data.swift */,
-				C631C7C92636C56A00E1AF4E /* InputDeviceSupport */,
 				C6EAFFD22632548300EFE402 /* TrackingArea.swift */,
 				C6EAFFD426327B7500EFE402 /* Model */,
+				C631C7C92636C56A00E1AF4E /* InputDeviceSupport */,
 				C6EAFFD72634733400EFE402 /* Old Code */,
 				C6AE5D6F24C94F6A000EDC78 /* Assets.xcassets */,
 				C6AE5D7424C94F6A000EDC78 /* Info.plist */,
@@ -462,6 +473,7 @@
 				C68649EC262FF69A00035B75 /* Data.swift in Sources */,
 				C686493026247F4400035B75 /* TerrainEditorScene.swift in Sources */,
 				C68649D4262ECDA200035B75 /* CIImageProvider.swift in Sources */,
+				C62A978E2636EA6800B49566 /* DEMLayerDetail.swift in Sources */,
 				C686492F26247F4400035B75 /* Document.swift in Sources */,
 				C686493426247F4B00035B75 /* AppDelegate.swift in Sources */,
 				C6CAB73024D1596800136F90 /* TIFFImage.swift in Sources */,
