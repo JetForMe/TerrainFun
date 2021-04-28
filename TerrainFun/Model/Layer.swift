@@ -66,12 +66,21 @@ TerrainGeneratorLayer : Layer
 		self.scene?.rootNode.addChildNode(cameraNode)
 		
 		//	Create some geometry…
+		//
+		//	We add everything under a single geometryNode so that we can
+		//	manipulate just that node with the spacemouse when it's in
+		//	model mode.
+		
+		let geometryNode = SCNNode()
+		self.scene?.rootNode.addChildNode(geometryNode)
+		self.geometryNode = geometryNode
 		
 		let axesNode = TerrainEditorScene.setupCoordinateAxes()
-		self.scene?.rootNode.addChildNode(axesNode)
+		geometryNode.addChildNode(axesNode)
 	}
 
 	var			cameraNode			:	SCNNode!
+	var			geometryNode		:	SCNNode!
 }
 
 protocol

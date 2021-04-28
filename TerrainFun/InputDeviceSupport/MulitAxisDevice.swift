@@ -23,6 +23,13 @@ MultiAxisDevice : ObservableObject
 {
 	static let shared = MultiAxisDevice()
 	
+	enum
+	Mode
+	{
+		case camera			//	Spacemouse controls camera
+		case model			//	Spacemouse controls scene
+	}
+	
 	private
 	init()
 	{
@@ -52,6 +59,9 @@ MultiAxisDevice : HIDManagerDelegate
 			case 55:		state.yaw = inCode
 			case 54:		state.roll = inCode
 			case 53:		state.pitch = inCode
+			case 52:		state.y = inCode
+			case 51:		state.z = inCode
+			case 50:		state.x = inCode
 			default:
 				break
 		}
@@ -67,4 +77,7 @@ MultiAxisState
 	var			pitch		:	Int		=	0
 	var			yaw			:	Int		=	0
 	var			roll		:	Int		=	0
+	var			x			:	Int		=	0
+	var			y			:	Int		=	0
+	var			z			:	Int		=	0
 }
