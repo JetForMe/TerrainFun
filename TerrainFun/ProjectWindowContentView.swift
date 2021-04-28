@@ -115,6 +115,7 @@ LayerDetail: View
 	{
 		VStack {
 			Spacer()
+				.background(Color.red)
 			
 			if self.layer is DEMLayer
 			{
@@ -122,7 +123,7 @@ LayerDetail: View
 			}
 			else if self.layer is TerrainGeneratorLayer
 			{
-				TerrainGeneratorLayerDetail()
+				TerrainGeneratorLayerDetail(layer: self.layer as! TerrainGeneratorLayer)
 			}
 			else
 			{
@@ -130,6 +131,8 @@ LayerDetail: View
 			}
 			
 			Spacer()
+				.background(Color.blue)
+			
 			let g = self.layer.projection!.geodetic(from: self.cursorPosition)
 			LayerInfoBar(local: self.local, cursorPosition: self.cursorPosition, geodeticPosition: g)
 		}

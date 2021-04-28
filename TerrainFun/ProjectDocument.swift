@@ -29,6 +29,7 @@ ProjectDocument : ReferenceFileDocument
 	
 	init()
 	{
+		addTerrainGeneratorLayer()
 	}
 	
 	required

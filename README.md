@@ -55,6 +55,12 @@ https://alastaira.wordpress.com/2013/11/12/importing-dem-terrain-heightmaps-for-
 
 ## Notes
 
+### Mars MOLA Data
+
+Computed Min/Max=-8528.000, 21226.000
+NoData Value=-32768
+
+
 ### SceneKit
 
 * A basic scene puts the camera on the positive z-axis looking toward the origin, with the x-axis to the right, and the y-axis up.

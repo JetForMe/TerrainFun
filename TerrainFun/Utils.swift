@@ -10,6 +10,7 @@
 import CoreGraphics
 import Foundation
 
+
 extension Double
 {
 	public static var	twoPi: Double							{ return 2.0 * Double.pi }

@@ -21,6 +21,9 @@ import Combine
 class
 MultiAxisDevice : ObservableObject
 {
+	static let shared = MultiAxisDevice()
+	
+	private
 	init()
 	{
 		self.hidManager = HIDManager.shared
@@ -42,12 +45,18 @@ MultiAxisDevice : HIDManagerDelegate
 		
 		//	SpaceMouse cookie 54 is roll axis
 		
+		var state = self.state
+		
 		switch (inCookie)
 		{
-			case 54:		self.state.roll = inCode
+			case 55:		state.yaw = inCode
+			case 54:		state.roll = inCode
+			case 53:		state.pitch = inCode
 			default:
 				break
 		}
+		
+		self.state = state
 	}
 	
 }
@@ -55,5 +64,7 @@ MultiAxisDevice : HIDManagerDelegate
 struct
 MultiAxisState
 {
+	var			pitch		:	Int		=	0
+	var			yaw			:	Int		=	0
 	var			roll		:	Int		=	0
 }

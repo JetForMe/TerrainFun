@@ -10,6 +10,8 @@ import SwiftUI
 
 import CoreLocation
 import Foundation
+import SceneKit
+
 
 
 class
@@ -22,6 +24,7 @@ Layer : ObservableObject, Identifiable
 	@Published	var			projection				:	Projection?
 	@Published	var			sourceSize				:	CGSize?
 	@Published	var			workingImage			:	CGImage?
+	@Published	var			scene					:	SCNScene?
 }
 
 class
@@ -45,7 +48,30 @@ TerrainGeneratorLayer : Layer
 		super.init()
 		self.name = "Terrain Generator"
 		self.projection = Mars2000()
+		
+		//	Create a test scene…
+		
+		self.scene = SCNScene()
+		
+		//	Create the camera…
+		
+		let camera = SCNCamera()
+		camera.zNear = 0.01
+		
+		let cameraNode = SCNNode()
+		cameraNode.camera = camera
+		cameraNode.position = SCNVector3(x: 10.0, y: 10.0, z: 10.0)
+		cameraNode.look(at: SCNVector3(0.0, 0.0, 0.0))
+		self.cameraNode = cameraNode
+		self.scene?.rootNode.addChildNode(cameraNode)
+		
+		//	Create some geometry…
+		
+		let axesNode = TerrainEditorScene.setupCoordinateAxes()
+		self.scene?.rootNode.addChildNode(axesNode)
 	}
+
+	var			cameraNode			:	SCNNode!
 }
 
 protocol

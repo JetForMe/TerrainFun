@@ -8,41 +8,55 @@
 
 import SwiftUI
 
+import GLKit
 import SceneKit
 
 struct
 PerlinTerrainGeneratorView: View
 {
-	var			scene				:	SCNScene//				=	SCNScene(named: "TempScene")
-	var			cameraNode			:	SCNNode?	{ self.scene.rootNode.childNode(withName: "camera", recursively: false) }
+	let			layer				:	TerrainGeneratorLayer
+	var			angle				:	Double = 0.0
 	
-	@ObservedObject	var			multiAxisInput									=	MultiAxisDevice()
-	@State	private	var			multiAxisState		:	MultiAxisState			=	MultiAxisState()
+	@EnvironmentObject	private	var 		multiAxisInput		:	MultiAxisDevice
+	@State				private	var			multiAxisState		:	MultiAxisState			=	MultiAxisState()
 	
-	let			updateTimer	= Timer.publish(every: 1.0 / 30.0, on: .main, in: .common).autoconnect()
-	
-	init()
-	{
-		self.scene = SCNScene()
-		let axesNode = TerrainEditorScene.setupCoordinateAxes()
-		self.scene.rootNode.addChildNode(axesNode)
-	}
+	@State				private	var			updateTimer										=	Timer.publish(every: 1.0 / 30.0, on: .main, in: .common).autoconnect()
 	
     var
     body: some View
     {
-        SceneView(scene: self.scene, pointOfView: self.cameraNode)
+        SceneView(scene: self.layer.scene, pointOfView: self.layer.cameraNode, delegate: PerlinTerrainGeneratorRendererDelegate(view: self))
 			.onReceive(self.updateTimer) { inTimer in
-				debugLog("timer")
+				if let ea = self.layer.cameraNode
+				{
+					let zq = simd_quatf(angle: Float(self.multiAxisState.roll) * 0.001, axis: simd_float3(x: 0, y: 0, z: 1))
+					let yq = simd_quatf(angle: Float(-self.multiAxisState.yaw) * 0.001, axis: simd_float3(x: 0, y: 1, z: 0))
+					let xq = simd_quatf(angle: Float(self.multiAxisState.pitch) * 0.001, axis: simd_float3(x: 1, y: 0, z: 0))
+					let qq = xq * yq * zq
+					let q = SCNQuaternion(qq.vector)
+					ea.localRotate(by: q)
+				}
 			}
-//			.onReceive(self.multiAxisInput.state) { inState in
-//				self.multiAxisState = inState
-//			}
+			.onReceive(self.multiAxisInput.$state) { inState in
+				self.multiAxisState = inState
+			}
     }
+}
+
+class
+PerlinTerrainGeneratorRendererDelegate : NSObject, SCNSceneRendererDelegate
+{
+	init(view inView: PerlinTerrainGeneratorView)
+	{
+		self.view = inView
+	}
+	
+	let view: PerlinTerrainGeneratorView
 }
 
 struct PerlinTerrainGeneratorView_Previews: PreviewProvider {
     static var previews: some View {
-        PerlinTerrainGeneratorView()
+        PerlinTerrainGeneratorView(layer: TerrainGeneratorLayer())
+			.environmentObject(MultiAxisDevice.shared)
     }
 }

@@ -27,6 +27,7 @@ TerrainFunApp: App
 		{ inGroup in
 			ProjectWindowContentView(document: inGroup.document)
 				.frame(minWidth: 301.0, minHeight: 100.0)
+				.environmentObject(MultiAxisDevice.shared)
 				.onReceive(self.addTerrainGeneratorLayerCommand) { _ in
 					inGroup.document.addTerrainGeneratorLayer()
 				}
@@ -81,8 +82,9 @@ TerrainFunApp: App
 		writeCGImage(image!, to: destURL)
 	}
 	
+	//	Stupid hacks for menu commands handled by Documents…
 	
-	private	let			addTerrainGeneratorLayerCommand			=	PassthroughSubject<Void, Never>()
+					private	let			addTerrainGeneratorLayerCommand			=	PassthroughSubject<Void, Never>()
 }
 
 @discardableResult func writeCGImage(_ image: CGImage, to destinationURL: URL) -> Bool {

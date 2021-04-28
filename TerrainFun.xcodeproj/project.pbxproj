@@ -36,6 +36,7 @@
 		C6AE5D7F24C94F6B000EDC78 /* TerrainFunTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5D7E24C94F6B000EDC78 /* TerrainFunTests.swift */; };
 		C6AE5D8A24C94F6B000EDC78 /* TerrainFunUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5D8924C94F6B000EDC78 /* TerrainFunUITests.swift */; };
 		C6AE5DEB24C97AE4000EDC78 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6AE5DEA24C97AE4000EDC78 /* Utils.swift */; };
+		C6BE5F122639067B0090C6F9 /* SCNQuaternion.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6BE5F112639067B0090C6F9 /* SCNQuaternion.swift */; };
 		C6CAB72E24D152C500136F90 /* BinaryReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6CAB72D24D152C500136F90 /* BinaryReader.swift */; };
 		C6CAB73024D1596800136F90 /* TIFFImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6CAB72F24D1596800136F90 /* TIFFImage.swift */; };
 		C6EAFFD32632548300EFE402 /* TrackingArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6EAFFD22632548300EFE402 /* TrackingArea.swift */; };
@@ -144,6 +145,7 @@
 		C6AE5DE824C97A6C000EDC78 /* TerrainEditorScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerrainEditorScene.swift; sourceTree = "<group>"; };
 		C6AE5DEA24C97AE4000EDC78 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		C6AE5DEC24C97C51000EDC78 /* SCNViewFR.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCNViewFR.swift; sourceTree = "<group>"; };
+		C6BE5F112639067B0090C6F9 /* SCNQuaternion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCNQuaternion.swift; sourceTree = "<group>"; };
 		C6CAB72D24D152C500136F90 /* BinaryReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinaryReader.swift; sourceTree = "<group>"; };
 		C6CAB72F24D1596800136F90 /* TIFFImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TIFFImage.swift; sourceTree = "<group>"; };
 		C6EAFFD22632548300EFE402 /* TrackingArea.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackingArea.swift; sourceTree = "<group>"; };
@@ -200,13 +202,6 @@
 			path = TerrainGeneratorLayerDetail;
 			sourceTree = "<group>";
 		};
-		C631C7C42636B18600E1AF4E /* TerrainGenerator */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = TerrainGenerator;
-			sourceTree = "<group>";
-		};
 		C631C7C92636C56A00E1AF4E /* InputDeviceSupport */ = {
 			isa = PBXGroup;
 			children = (
@@ -261,7 +256,6 @@
 		C6AE5D6824C94F68000EDC78 /* TerrainFun */ = {
 			isa = PBXGroup;
 			children = (
-				C631C7C42636B18600E1AF4E /* TerrainGenerator */,
 				C6864911262468F800035B75 /* TerrainFunApp.swift */,
 				C6864937262579B800035B75 /* ProjectDocument.swift */,
 				C68649192624693200035B75 /* ProjectWindowContentView.swift */,
@@ -271,6 +265,7 @@
 				C6AE5DEA24C97AE4000EDC78 /* Utils.swift */,
 				C68649D7262EDF0600035B75 /* InstrumentationUtilities.swift */,
 				C68649EB262FF69A00035B75 /* Data.swift */,
+				C6BE5F112639067B0090C6F9 /* SCNQuaternion.swift */,
 				C6EAFFD22632548300EFE402 /* TrackingArea.swift */,
 				C6EAFFD426327B7500EFE402 /* Model */,
 				C631C7C92636C56A00E1AF4E /* InputDeviceSupport */,
@@ -479,6 +474,7 @@
 				C68649D4262ECDA200035B75 /* CIImageProvider.swift in Sources */,
 				C62A978E2636EA6800B49566 /* DEMLayerDetail.swift in Sources */,
 				C686492F26247F4400035B75 /* Document.swift in Sources */,
+				C6BE5F122639067B0090C6F9 /* SCNQuaternion.swift in Sources */,
 				C686493426247F4B00035B75 /* AppDelegate.swift in Sources */,
 				C6CAB73024D1596800136F90 /* TIFFImage.swift in Sources */,
 				C631C7CB2636C57800E1AF4E /* HIDManager.swift in Sources */,
@@ -589,6 +585,7 @@
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				TestDataDirectory = "$(TerrainFunTestDataDirectory)";
 			};
 			name = Debug;
@@ -644,6 +641,7 @@
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
 				TestDataDirectory = "$(TerrainFunTestDataDirectory)";
 			};
 			name = Release;
@@ -670,7 +668,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.latencyzero.TerrainFun;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = BridgingHeader.h;
-				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -696,7 +693,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.latencyzero.TerrainFun;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = BridgingHeader.h;
-				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -716,7 +712,6 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.latencyzero.TerrainFunTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TerrainFun.app/Contents/MacOS/TerrainFun";
 			};
 			name = Debug;
@@ -737,7 +732,6 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.latencyzero.TerrainFunTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TerrainFun.app/Contents/MacOS/TerrainFun";
 			};
 			name = Release;
@@ -757,7 +751,6 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.latencyzero.TerrainFunUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
 				TEST_TARGET_NAME = TerrainFun;
 			};
 			name = Debug;
@@ -777,7 +770,6 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.latencyzero.TerrainFunUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
 				TEST_TARGET_NAME = TerrainFun;
 			};
 			name = Release;
