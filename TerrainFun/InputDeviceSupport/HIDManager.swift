@@ -13,7 +13,7 @@ import IOKit.hid
 protocol
 HIDManagerDelegate : AnyObject
 {
-	func deviceValueReceived(device inDevice: HIDDevice, element inElement: IOHIDElement, cookie inCookie: IOHIDElementCookie, code inCode: Int)
+	func deviceValueReceived(device inDevice: HIDDevice, usagePage inPage: UInt32, usage inUsage: UInt32, value inValue: IOHIDValue)
 }
 
 /**
@@ -37,14 +37,19 @@ HIDManager
 		IOHIDManagerRegisterDeviceMatchingCallback(self.hm, self.attachCallback, Unmanaged<HIDManager>.passUnretained(self).toOpaque())
 		IOHIDManagerRegisterDeviceRemovalCallback(self.hm, self.detachCallback, Unmanaged<HIDManager>.passUnretained(self).toOpaque())
 		
-		let devices = [
+		let criteria = [
 			kIOHIDDeviceUsagePageKey: 0x01,		//	Generic Desktop
 			kIOHIDDeviceUsageKey: 0x08			//	Multi-axis Controller
 		] as CFDictionary
-		IOHIDManagerSetDeviceMatching(self.hm, devices)
+		IOHIDManagerSetDeviceMatching(self.hm, criteria)
 		
 		IOHIDManagerScheduleWithRunLoop(self.hm, CFRunLoopGetCurrent(), CFRunLoopMode.defaultMode.rawValue)
 		IOHIDManagerOpen(self.hm, IOOptionBits(kIOHIDOptionsTypeNone))
+	}
+	
+	deinit
+	{
+		IOHIDManagerClose(self.hm, IOOptionBits(kIOHIDOptionsTypeNone))
 	}
 	
 	func
@@ -59,10 +64,11 @@ HIDManager
 	detached(result: IOReturn, device inDevice: IOHIDDevice)
 	{
 		debugLog("detached: \(inDevice)")
+		self.devices.removeAll { $0.device == inDevice }
 	}
 	
-	let			hm						=	IOHIDManagerCreate(kCFAllocatorDefault, IOOptionBits(kIOHIDOptionsTypeNone))
-	var			devices					=	[HIDDevice]()
+	let			hm												=	IOHIDManagerCreate(kCFAllocatorDefault, IOOptionBits(kIOHIDOptionsTypeNone))
+	var			devices											=	[HIDDevice]()
 	weak var	delegate			:	HIDManagerDelegate?
 	
 	var			attachCallback		:	IOHIDDeviceCallback		=	{ (inCTX, inResult, inSender, inDevice) in
@@ -76,12 +82,41 @@ HIDManager
 }
 
 extension
+HIDManager
+{
+	public
+	enum UsagePage : UInt32
+	{
+		case undefined			=	0x00
+		case genericDesktop		=	0x01
+		case led				=	0x08
+		case button				=	0x09
+	}
+	
+	public
+	enum GenericDesktopUsage : UInt32
+	{
+		case undefined			=	0x00
+		case x					=	0x30
+		case y					=	0x31
+		case z					=	0x32
+		case rX					=	0x33
+		case rY					=	0x34
+		case rZ					=	0x35
+	}
+}
+
+/**
+	TODO: For now we're routing all device callbacks thruogh the HIDManager. This probably isn't right.
+*/
+
+extension
 HIDManager : HIDDeviceDelegate
 {
 	func
-	valueReceived(device inDevice: HIDDevice, element inElement: IOHIDElement, cookie inCookie: IOHIDElementCookie, code inCode: Int)
+	valueReceived(device inDevice: HIDDevice, usagePage inPage: UInt32, usage inUsage: UInt32, value inValue: IOHIDValue)
 	{
-		self.delegate?.deviceValueReceived(device: inDevice, element: inElement, cookie: inCookie, code: inCode)
+		self.delegate?.deviceValueReceived(device: inDevice, usagePage: inPage, usage: inUsage, value: inValue)
 	}
 	
 }
@@ -105,18 +140,29 @@ HIDDevice
 		{
 			debugLog("Product: \(ps)")
 		}
-
+	}
+	
+	deinit
+	{
+		IOHIDDeviceClose(self.device, IOOptionBits(kIOHIDOptionsTypeNone))
 	}
 	
 	func
 	valueReceived(result inResult: IOReturn, value inValue: IOHIDValue)
 	{
-		let element = IOHIDValueGetElement(inValue)
-		let cookie = IOHIDElementGetCookie(element)
-		let code = IOHIDValueGetIntegerValue(inValue)
-		self.delegate?.valueReceived(device: self, element: element, cookie: cookie, code: code)
+		let element = inValue.element
+		let usagePage = element.usagePage
+		let usage = element.usage
+		self.delegate?.valueReceived(device: self, usagePage: usagePage, usage: usage, value: inValue)
 	}
 	
+	let		elementTypes: [IOHIDElementType : String] =
+								[
+									//	Many more exist
+									kIOHIDElementTypeInput_Button : "Button",
+									kIOHIDElementTypeInput_Axis : "Axis",
+									kIOHIDElementTypeCollection : "Collection",
+								]
 	func
 	getString(forProperty inKey: String)
 		-> String?
@@ -145,5 +191,27 @@ HIDDevice
 protocol
 HIDDeviceDelegate : AnyObject
 {
-	func		valueReceived(device inDevice: HIDDevice, element inElement: IOHIDElement, cookie inCookie: IOHIDElementCookie, code inCode: Int)
+	func		valueReceived(device inDevice: HIDDevice, usagePage inPage: UInt32, usage inUsage: UInt32, value inValue: IOHIDValue)
+}
+
+extension
+IOHIDElementType : Hashable
+{
+}
+
+extension
+IOHIDValue
+{
+	var		element						:	IOHIDElement		{ IOHIDValueGetElement(self) }
+	var		intValue					:	Int					{ IOHIDValueGetIntegerValue(self) }
+	var		scaledValueCalibrated		:	Double				{ IOHIDValueGetScaledValue(self, IOHIDValueScaleType(kIOHIDValueScaleTypeCalibrated)) }
+	var		scaledValuePhysical			:	Double				{ IOHIDValueGetScaledValue(self, IOHIDValueScaleType(kIOHIDValueScaleTypePhysical)) }
+	var		scaledValueExponent			:	Double				{ IOHIDValueGetScaledValue(self, IOHIDValueScaleType(kIOHIDValueScaleTypeExponent)) }
+}
+
+extension
+IOHIDElement
+{
+	var		usagePage					:	UInt32				{ IOHIDElementGetUsagePage(self) }
+	var		usage						:	UInt32				{ IOHIDElementGetUsage(self) }
 }

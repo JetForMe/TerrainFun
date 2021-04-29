@@ -66,8 +66,8 @@ PerlinTerrainGeneratorRendererDelegate : NSObject, SCNSceneRendererDelegate
 		
 		//	Rotate and translate by values dependent on frame rate…
 		
-		let rotationScale: Float = 0.02
-		let translationScale: Float = 0.04
+		let rotationScale: Float = 0.005
+		let translationScale: Float = 0.01
 		
 		let xr = self.multiAxisInput.state.pitch * rotationScale * deltaT
 		let yr = self.multiAxisInput.state.yaw * rotationScale * deltaT
