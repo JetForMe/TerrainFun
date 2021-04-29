@@ -82,4 +82,18 @@ extension CGSize
 	}
 }
 
+import SwiftUI
+
+extension
+DefaultStringInterpolation
+{
+	mutating
+	func
+	appendInterpolation<T>(_ inVal: T, specifier inSpecifier: String) where T : _FormatSpecifiable
+	{
+		appendInterpolation(String(format: inSpecifier, inVal as! CVarArg))
+	}
+}
+
+
 

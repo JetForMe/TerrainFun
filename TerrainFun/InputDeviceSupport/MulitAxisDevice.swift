@@ -48,7 +48,7 @@ MultiAxisDevice : HIDManagerDelegate
 	func
 	deviceValueReceived(device inDevice: HIDDevice, element inElement: IOHIDElement, cookie inCookie: IOHIDElementCookie, code inCode: Int)
 	{
-		debugLog("Value callback. element: [\(inElement)], cookie: \(inCookie), code: \(inCode)")
+//		debugLog("Value callback. element: [\(inElement)], cookie: \(inCookie), code: \(inCode)")
 		
 		//	SpaceMouse cookie 54 is roll axis
 		
@@ -56,12 +56,12 @@ MultiAxisDevice : HIDManagerDelegate
 		
 		switch (inCookie)
 		{
-			case 55:		state.yaw = inCode
-			case 54:		state.roll = inCode
-			case 53:		state.pitch = inCode
-			case 52:		state.y = inCode
-			case 51:		state.z = inCode
-			case 50:		state.x = inCode
+		case 55:		state.yaw = Float(inCode)
+		case 54:		state.roll = Float(inCode)
+		case 53:		state.pitch = Float(inCode)
+		case 52:		state.y = Float(inCode)
+		case 51:		state.z = Float(inCode)
+		case 50:		state.x = Float(inCode)
 			default:
 				break
 		}
@@ -74,10 +74,10 @@ MultiAxisDevice : HIDManagerDelegate
 struct
 MultiAxisState
 {
-	var			pitch		:	Int		=	0
-	var			yaw			:	Int		=	0
-	var			roll		:	Int		=	0
-	var			x			:	Int		=	0
-	var			y			:	Int		=	0
-	var			z			:	Int		=	0
+	var			pitch		:	Float		=	0
+	var			yaw			:	Float		=	0
+	var			roll		:	Float		=	0
+	var			x			:	Float		=	0
+	var			y			:	Float		=	0
+	var			z			:	Float		=	0
 }
