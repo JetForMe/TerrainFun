@@ -9,7 +9,6 @@
 import Foundation
 import IOKit
 import IOKit.hid
-import Combine
 
 /**
 	Makes working with USB HID Multiaxis Devices easier (specifically geared toward
@@ -38,7 +37,7 @@ MultiAxisDevice : ObservableObject
 	}
 	
 	let			hidManager			:	HIDManager
-	@Published var			state									=	MultiAxisState()
+	var			state									=	MultiAxisState()
 }
 
 

@@ -27,7 +27,6 @@ TerrainFunApp: App
 		{ inGroup in
 			ProjectWindowContentView(document: inGroup.document)
 				.frame(minWidth: 301.0, minHeight: 100.0)
-				.environmentObject(MultiAxisDevice.shared)
 				.onReceive(self.addTerrainGeneratorLayerCommand) { _ in
 					inGroup.document.addTerrainGeneratorLayer()
 				}

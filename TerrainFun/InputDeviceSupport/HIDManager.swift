@@ -17,9 +17,12 @@ HIDManagerDelegate : AnyObject
 }
 
 /**
+	This is a very simplistic HIDManager wrapper that hard-codes device lookups,
+	and makes a lot of assumptions (like there's only one particular device attached).
+	
 	Note: The USB entitlement must be enabled. If you get "IOServiceOpen failed: 0xe00002e2", try enabling that.
 	
-	What is "Error opening HIDDevice: 0xe00002c5, 709"
+	What is "Error opening HIDDevice: 0xe00002c5, 709"?
 	
 */
 
@@ -78,9 +81,6 @@ HIDManager : HIDDeviceDelegate
 	func
 	valueReceived(device inDevice: HIDDevice, element inElement: IOHIDElement, cookie inCookie: IOHIDElementCookie, code inCode: Int)
 	{
-//		let usagePage = IOHIDElementGetUsagePage(inElement)
-//		let usage = IOHIDElementGetUsage(inElement)
-//		debugLog("Value callback. element: [\(inElement)], cookie: \(inCookie), code: \(inCode)")
 		self.delegate?.deviceValueReceived(device: inDevice, element: inElement, cookie: inCookie, code: inCode)
 	}
 	
